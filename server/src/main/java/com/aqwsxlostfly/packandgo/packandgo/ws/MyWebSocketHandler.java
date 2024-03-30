@@ -11,7 +11,7 @@ import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 @Component
 public class MyWebSocketHandler extends AbstractWebSocketHandler {
 
-    private Array<WebSocketSession> sessions = new Array<>();
+    private final Array<WebSocketSession> sessions = new Array<>();
 
     private ConnectListener connectListener;
     private DisconnectListener disconnectListener;
@@ -23,7 +23,9 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
         Gdx.app.log("CONNECTION", " NEW CONNECTION: " + " sessionID " + session.getId() + " headers " +
                 session.getHandshakeHeaders() + " protocols " + session.getAcceptedProtocol() + " sizeBynaryLimit " +
                 session.getBinaryMessageSizeLimit() + " clientIP " + session.getRemoteAddress());
-        sessions.add(session);
+        synchronized (sessions) {
+            sessions.add(session);
+        }
         connectListener.handle(session);
     }
 
@@ -48,7 +50,9 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
         Gdx.app.log("CLOSED CONNECTION", " CLOSED CONNECTION: " + " sessionID " + session.getId() + " headers " +
                 session.getHandshakeHeaders() + " protocols " + session.getAcceptedProtocol() + " sizeBynaryLimit " +
                 session.getBinaryMessageSizeLimit() + " clientIP " + session.getRemoteAddress());
-        sessions.removeValue(session, true);
+        synchronized (sessions) {
+            sessions.removeValue(session, true);
+        }
         disconnectListener.handle(session);
     }
 
@@ -64,7 +68,4 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
         this.messageListener = messageListener;
     }
 
-    public void setSessions(Array<WebSocketSession> sessions) {
-        this.sessions = sessions;
-    }
 }

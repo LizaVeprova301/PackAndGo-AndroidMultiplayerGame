@@ -194,7 +194,6 @@ public class WaitingSc implements Screen {
         }
 
 
-
         player.setDirection(joy.getDir());
         for (int i = 0; i < players.size(); i++) {
             players.get(i).update();

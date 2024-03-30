@@ -1,10 +1,8 @@
 package com.aqwsxlostfly.packandgo.packandgo.GameState;
 
-import jakarta.websocket.Session;
-
 import java.util.HashMap;
 
-public class Players {
+public class GameState {
 
     public int playersAmount = 0;
 
