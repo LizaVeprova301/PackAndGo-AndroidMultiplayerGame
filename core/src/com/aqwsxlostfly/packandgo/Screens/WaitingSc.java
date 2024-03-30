@@ -32,6 +32,10 @@ public class WaitingSc implements Screen {
 
     public static ArrayList<Player> players;
 
+    private static final int MAX_RECONNECT_ATTEMPTS = 3;
+
+    private boolean isConnecting = false;
+
     BitmapFont font;
     GlyphLayout textWaiting, textJoin;
 
@@ -109,6 +113,26 @@ public class WaitingSc implements Screen {
         });
 
         loadHeroes();
+//        connectSocket();
+    }
+
+    public void connectSocket() {
+        isConnecting = true;
+        int reconnectAttempts = 0;
+        while (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            try {
+                main.webSocketClient.connect();
+                isConnecting = false;
+                return;
+            } catch (Exception e) {
+                Gdx.app.error("ERROR SOCKET CONNECT", "Attempt " + (reconnectAttempts + 1) + " failed: " + e.getMessage());
+                reconnectAttempts++;
+            }
+        }
+
+        isConnecting = false;
+
+        Gdx.app.error("ERROR SOCKET CONNECT", "Maximum reconnection attempts reached");
     }
     @Override
     public void render(float delta) {
@@ -116,11 +140,8 @@ public class WaitingSc implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         gameUpdate();
         Main.batch.begin();
-
         gameRender(Main.batch);
         Main.batch.end();
-
-
     }
     @Override
     public void resize(int width, int height) {
@@ -166,12 +187,18 @@ public class WaitingSc implements Screen {
 
     public void gameUpdate() {
 
+        if (main.webSocketClient.isOpen()){
+//            main.webSocketClient.send("GAME UPDATE");
+        } else if (!main.webSocketClient.isOpen() && !isConnecting) {
+            connectSocket();
+        }
+
+
+
         player.setDirection(joy.getDir());
         for (int i = 0; i < players.size(); i++) {
             players.get(i).update();
         }
-
-        
 
         bulletGenerator.update(joyBullet);
         for (int i = 0; i < bullets.size(); i++) {
@@ -183,7 +210,7 @@ public class WaitingSc implements Screen {
     }
 
     public void gameRender(SpriteBatch batch) {
-        if (players.size() < 2) {
+        if (Main.gameState.getPlayersAmount() < 2) {
             font.draw(batch, textWaiting, Main.screenWidth / 2 - textWaiting.width / 2, Main.screenHeight -Main.screenHeight/10);
         } else {
             font.draw(batch, textJoin, Main.screenWidth / 2 - textWaiting.width / 2, Main.screenHeight -Main.screenHeight/10 );

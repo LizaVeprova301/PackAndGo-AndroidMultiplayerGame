@@ -1,5 +1,6 @@
 package com.aqwsxlostfly.packandgo.packandgo;
 
+import com.aqwsxlostfly.packandgo.packandgo.GameState.Players;
 import com.aqwsxlostfly.packandgo.packandgo.ws.MyWebSocketHandler;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -17,6 +18,8 @@ public class GameLoop extends ApplicationAdapter {
     private final MyWebSocketHandler socketHandler;
     private final Array<String> events = new Array<>();
 
+    private Players gameState = new Players();
+
     private final String JOIN_MSG = "Just joined";
     private final String LEFT_MSG = "Just left";
     private final String SAID_MSG = " said ";
@@ -30,12 +33,23 @@ public class GameLoop extends ApplicationAdapter {
 
         socketHandler.setConnectListener(session -> {
             events.add(session.getId() + JOIN_MSG);
+            if(!gameState.containPlayer(session.getId())){
+                gameState.addPlayer(session.getId());
+                gameState.updateAmount();
+                events.add("playersAmount " + gameState.getPlayersAmount());
+            }
         });
         socketHandler.setDisconnectListener(session -> {
             events.add(session.getId() + LEFT_MSG);
+            if(gameState.containPlayer(session.getId())){
+                gameState.removePlayer(session.getId());
+                gameState.updateAmount();
+                events.add("playersAmount " + gameState.getPlayersAmount());
+            }
         });
         socketHandler.setMessageListener((((session, message) -> {
             events.add(session.getId() + SAID_MSG + message);
+            events.add("playersAmount " + gameState.getPlayersAmount());
         })));
 
     }

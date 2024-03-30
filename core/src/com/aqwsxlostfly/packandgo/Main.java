@@ -2,6 +2,7 @@ package com.aqwsxlostfly.packandgo;
 
 
 import com.aqwsxlostfly.packandgo.Screens.WaitingSc;
+import com.aqwsxlostfly.packandgo.Tools.GameState;
 import com.aqwsxlostfly.packandgo.client.ws.NewWebSocket;
 import com.aqwsxlostfly.packandgo.client.ws.WebSocketListener;
 import com.badlogic.gdx.Game;
@@ -13,11 +14,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main extends Game {
 
 	public NewWebSocket webSocketClient;
+
+	public static GameState gameState;
 
 	public static SpriteBatch batch;
 	public static Texture img;
@@ -34,7 +38,18 @@ public class Main extends Game {
 		WebSocketListener webSocketListener = new WebSocketListener() {
 			@Override
 			public void onMessageReceived(String message) {
+
+				Pattern pattern = Pattern.compile("playersAmount (\\d+)");
+				Matcher matcher = pattern.matcher(message);
+
+				if (matcher.find()) {
+					int amount = Integer.parseInt(matcher.group(1));
+					Main.gameState.setPlayersAmount(amount);
+					Gdx.app.log("UPDATE AMOUNT", String.valueOf(Main.gameState.getPlayersAmount())) ;
+				}
+
 				Gdx.app.log("MESSAGE RECEIVED",message);
+
 			}
 
 			@Override
@@ -62,15 +77,16 @@ public class Main extends Game {
 	public void create () {
 		try {
 			Gdx.app.log("INFO","CONNECT PROCESS");
-			String wsUri = "ws://192.168.113.145:8867/ws";
-			webSocketClient = new NewWebSocket(new URI(wsUri), getWebsocketListener());
-			webSocketClient.connect();
-			webSocketClient.send("CONNECT WAITING SCREEN");
+			String wsUri = "ws://192.168.170.252:8867/ws";
+			this.webSocketClient = new NewWebSocket(new URI(wsUri), getWebsocketListener());
+//			webSocketClient.connect();
+//			webSocketClient.send("CONNECT WAITING SCREEN");
 		} catch (Exception e) {
 
 			Gdx.app.error("ERROR SOCKET CONNECT","ERROR" + e.getMessage());
 		}
 
+		gameState = new GameState();
 		batch = new SpriteBatch();
 		img = new Texture("packlogo.png");
 		circle = new Texture("circle.png");
