@@ -1,10 +1,22 @@
 ## Java
 
+## ENV
+.env
+*.env
+env.properties
+local.properties
+application.properties
+/env.properties
+/local.properties
+/application.properties
 *.class
 *.war
 *.ear
+assets/env.properties
+/assets/env.properties
 hs_err_pid*
-
+assets/env.properties
+/assets/env.properties
 ## Robovm
 /ios/robovm-build/
 
