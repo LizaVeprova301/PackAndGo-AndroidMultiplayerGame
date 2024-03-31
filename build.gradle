@@ -77,3 +77,14 @@ project(":core") {
         implementation 'org.java-websocket:Java-WebSocket:1.5.2'
     }
 }
+
+project(":android") {
+
+    dependencies {
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
+        implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+    }
+}

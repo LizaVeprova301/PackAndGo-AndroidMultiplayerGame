@@ -18,7 +18,7 @@
 
 
         <activity
-            android:name="com.aqwsxlostfly.packandgo.AndroidLauncher"
+            android:name="com.aqwsxlostfly.packandgo.client.AndroidLauncher"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"

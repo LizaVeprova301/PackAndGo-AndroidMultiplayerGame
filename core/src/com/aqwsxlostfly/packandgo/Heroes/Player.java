@@ -61,4 +61,8 @@ public class Player extends Heroes {
     public float getHealth(){return health;}
     public void setScore(){score++;}
     public int getScore(){return score;}
+
+    public void dispose() {
+        this.img.dispose();
+    }
 }
