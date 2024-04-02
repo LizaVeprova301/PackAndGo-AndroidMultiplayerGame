@@ -1,4 +1,4 @@
-package com.aqwsxlostfly.packandgo.packandgo.ws;
+package com.aqwsxlostfly.packandgo.packandgo.Ws;
 
 
 import org.springframework.web.socket.WebSocketSession;

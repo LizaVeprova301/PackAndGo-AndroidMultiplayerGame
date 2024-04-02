@@ -1,6 +1,6 @@
-package com.aqwsxlostfly.packandgo.packandgo.config;
+package com.aqwsxlostfly.packandgo.packandgo.Config;
 
-import com.aqwsxlostfly.packandgo.packandgo.ws.MyWebSocketHandler;
+import com.aqwsxlostfly.packandgo.packandgo.Ws.MyWebSocketHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
