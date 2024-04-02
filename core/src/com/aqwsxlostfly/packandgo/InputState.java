@@ -4,6 +4,7 @@ import com.aqwsxlostfly.packandgo.Tools.Circle;
 import com.aqwsxlostfly.packandgo.Tools.Point2D;
 
 public interface InputState {
+
     void setPosition(Point2D pos);
     Point2D getPosition();
 
@@ -18,4 +19,7 @@ public interface InputState {
 
     void setRadius(float radius);
     float getRadius();
+
+    void setSpeed(float speed);
+    float getSpeed();
 }

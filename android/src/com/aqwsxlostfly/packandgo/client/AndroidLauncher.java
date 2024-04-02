@@ -62,14 +62,13 @@ public class AndroidLauncher extends AndroidApplication {
 //                main.handleTimer();
 //            }
 //        }, 0, 1);
-        initialize(main, config);
 
         String wsUri = readWsUriFromProperties();
 
         try {
             WebSocketClient webSocketClient = new WebSocketClient(new URI(wsUri), getWebsocketListener(callback));
 
-            connectSocket(webSocketClient);
+//            connectSocket(webSocketClient);
 
 //            main.setSocketState(webSocketClient.isOpen());
 //            Gdx.app.log("WS STATUS", "Status: " + main.getSocketState());
@@ -81,6 +80,10 @@ public class AndroidLauncher extends AndroidApplication {
             main.setMessageSender(message -> {
                 webSocketClient.send(toJson(message));
             });
+
+            initialize(main, config);
+
+            connectSocket(webSocketClient);
 
         } catch (URISyntaxException e) {
             Gdx.app.error("CONNECTION ERROR", "INCORRECT URL: " + e.getMessage());

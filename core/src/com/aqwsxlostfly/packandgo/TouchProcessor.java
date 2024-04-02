@@ -1,5 +1,6 @@
 package com.aqwsxlostfly.packandgo;
 
+import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.aqwsxlostfly.packandgo.Tools.Joystick;
 import com.aqwsxlostfly.packandgo.Tools.Point2D;
 import com.badlogic.gdx.InputProcessor;
@@ -65,9 +66,13 @@ public class TouchProcessor implements InputProcessor {
         }
     }
 
-    public InputState updateAndGetInputState(Point2D playerPos) {
-
-
+    public InputState updateAndGetInputState(Player player) {
+        inputState.setPosition(player.position);
+        inputState.setGhost(player.isGhost());
+        inputState.setHealth(player.getHealth());
+        inputState.setRadius(player.radius);
+        inputState.setScore(player.getScore());
+        inputState.setSpeed(player.speed);
         return inputState;
     }
 

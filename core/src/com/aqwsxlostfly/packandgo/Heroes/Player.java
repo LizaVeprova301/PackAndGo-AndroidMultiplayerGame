@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Player extends Heroes {
 
+    private String id;
     private int score = 0;
     private float health;
     private boolean ghost;
@@ -61,6 +62,14 @@ public class Player extends Heroes {
     public float getHealth(){return health;}
     public void setScore(){score++;}
     public int getScore(){return score;}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public void dispose() {
         this.img.dispose();

@@ -9,11 +9,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 
-
-
 public class Main extends Game {
 
 	public static String meId = "0909";
+
+
 
 	public  InputState inputState;
 	public MessageSender messageSender;

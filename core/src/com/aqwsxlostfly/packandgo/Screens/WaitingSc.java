@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
 
@@ -90,11 +91,19 @@ public class WaitingSc implements Screen {
         }
     }
 
+
     public void loadHeroes() {
         Player me = new Player(Main.capibara, new Point2D(Main.screenWidth / 2, Main.screenHeight / 2), 10F, (float) (Main.screenHeight / 5), 5);
         players.put(main.getMeId(), me);
         bullets = new ArrayList<Bullet>();
         bulletGenerator = new BulletGenerator();
+        Timer timer = new Timer();
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                handleTimer();
+            }
+        }, 0, 5);
     }
 
 
@@ -141,10 +150,12 @@ public class WaitingSc implements Screen {
     public void handleTimer() {
         if (inputProcessor != null && !players.isEmpty()) {
             Player me = players.get(main.getMeId());
-            InputState playerState = inputProcessor.updateAndGetInputState(me.position);
+            InputState playerState = inputProcessor.updateAndGetInputState(me);
             main.messageSender.sendMessage(playerState);
         }
     }
+
+
 
     public void evict(String idToEvict) {
         players.remove(idToEvict);
