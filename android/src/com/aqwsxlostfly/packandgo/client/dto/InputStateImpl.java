@@ -6,22 +6,41 @@ import com.aqwsxlostfly.packandgo.Tools.Point2D;
 
 public class InputStateImpl implements InputState {
 
-    private Point2D position;
+    private String type;
+    private float x;
+    private float y;
     private int score;
     private float health;
     private boolean ghost;
     public float speed;
     public float radius;
 
+    public InputStateImpl() {
+
+    }
+
+//    public InputStateImpl(Point2D position, float x, float y, int score, float health, boolean ghost, float speed, float radius) {
+//        this();
+//        this.position = position;
+//        this.x = x;
+//        this.y = y;
+//        this.score = score;
+//        this.health = health;
+//        this.ghost = ghost;
+//        this.speed = speed;
+//        this.radius = radius;
+//    }
+
     @Override
-    public void setPosition(Point2D position) {
-        this.position = position;
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override
-    public Point2D getPosition() {
-        return this.position;
+    public String getType() {
+        return this.type;
     }
+
 
     @Override
     public void setScore(int score) {
@@ -56,6 +75,26 @@ public class InputStateImpl implements InputState {
     @Override
     public float getSpeed() {
         return speed;
+    }
+
+    @Override
+    public void setX(float x) {
+        this.x =x;
+    }
+
+    @Override
+    public float getX() {
+        return this.x;
+    }
+
+    @Override
+    public void setY(float y) {
+        this.y =y;
+    }
+
+    @Override
+    public float getY() {
+        return this.y;
     }
 
     @Override

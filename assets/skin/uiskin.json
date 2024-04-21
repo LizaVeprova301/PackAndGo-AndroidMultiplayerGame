@@ -1,0 +1,42 @@
+{
+  "com.badlogic.gdx.graphics.Color": {
+    "RED": { "r": 1, "g": 0, "b": 0, "a": 1 },
+    "WHITE": { "r": 1, "g": 1, "b": 1, "a": 1 },
+    "MY_COLOR": { "r": 23, "g": 56, "b": 2, "a": 1 }
+  },
+  "com.badlogic.gdx.graphics.g2d.BitmapFont": {
+    "default-font": {
+      "file": "font-export.fnt",
+      "fontScale": 9.5
+    }
+  },
+ "com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle": {
+    "default": {
+      "titleFont": "default-font",
+      "background": "window_02",
+      "titleFontColor": "WHITE"
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle": {
+    "default": {
+      "up": "button_01",
+      "down": "button_02",
+      "font": "default-font"
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
+    "default": {
+      "font": "default-font",
+      "fontColor": "RED",
+      "background": "textbox_01",
+      "cursor": "textbox_cursor_02",
+      "selection": "selectbox_01"
+    }
+  },
+  "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+    "default": {
+      "font": "default-font",
+      "fontColor": "MY_COLOR"
+    }
+  }
+}

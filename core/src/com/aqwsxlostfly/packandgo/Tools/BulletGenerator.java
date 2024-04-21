@@ -10,8 +10,8 @@ public class BulletGenerator {
 
     public void update(Joystick joy) {
         isFire = joy.getDir().getX() != 0 || joy.getDir().getY() != 0;
-        if (isFire) WaitingSc.bullets.add(new Bullet(Main.bullet, WaitingSc.players.get(Main.meId).position,
-                25, WaitingSc.players.get(Main.meId).radius / 8, joy.getDir()));
+        if (isFire) WaitingSc.bullets.add(new Bullet(Main.bullet, Main.players.get(Main.meId).position,
+                25, Main.players.get(Main.meId).radius / 8, joy.getDir()));
 
 
     }

@@ -7,16 +7,38 @@ public class Player implements Json.Serializable {
     private String id;
 
     private Point2D position;
+
+    private float x;
+    private float y;
     private int score;
     private float health;
     private boolean ghost;
     public float speed;
     public float radius;
 
+//    public void update() {
+//        if (position.getX() + radius > Main.screenWidth) position.setX(Main.screenWidth - radius);
+//        if (position.getX() - radius < 0) position.setX(radius);
+//        if (position.getY() + radius > Main.screenHeight) position.setY(Main.screenHeight - radius);
+//        if (position.getY() - radius < 0) position.setY(radius);
+////        if (startTimer==0 && ghost) startTimer = System.currentTimeMillis();
+////        int seconds=0;
+////        if (startTimer>0) seconds = (int)(System.currentTimeMillis()-startTimer)/1000;
+////        if (seconds>3){
+////            ghost=false;
+////            startTimer=0;
+////        }
+//
+//        position.addCords(direction.getX() * speed, direction.getY() * speed);
+//        bounds.centerPos.setPoint(position);
+//
+//    }
+
 
     @Override
     public void write(Json json) {
-        json.writeValue("position", position);
+        json.writeValue("x", x);
+        json.writeValue("y", y);
         json.writeValue("score", score);
         json.writeValue("health", health);
         json.writeValue("ghost", ghost);
@@ -44,6 +66,22 @@ public class Player implements Json.Serializable {
 
     public void setPosition(Point2D position) {
         this.position = position;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public void setY(float y) {
+        this.y = y;
     }
 
     public int getScore() {

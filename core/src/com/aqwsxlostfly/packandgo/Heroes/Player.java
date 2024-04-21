@@ -38,17 +38,16 @@ public class Player extends Heroes {
         if (position.getX() - radius < 0) position.setX(radius);
         if (position.getY() + radius > Main.screenHeight) position.setY(Main.screenHeight - radius);
         if (position.getY() - radius < 0) position.setY(radius);
-        if (startTimer==0 && ghost) startTimer = System.currentTimeMillis();
-        int seconds=0;
-        if (startTimer>0) seconds = (int)(System.currentTimeMillis()-startTimer)/1000;
-        if (seconds>3){
-            ghost=false;
-            startTimer=0;
-        }
+//        if (startTimer==0 && ghost) startTimer = System.currentTimeMillis();
+//        int seconds=0;
+//        if (startTimer>0) seconds = (int)(System.currentTimeMillis()-startTimer)/1000;
+//        if (seconds>3){
+//            ghost=false;
+//            startTimer=0;
+//        }
 
         position.addCords(direction.getX() * speed, direction.getY() * speed);
         bounds.centerPos.setPoint(position);
-
 
     }
 
@@ -61,6 +60,9 @@ public class Player extends Heroes {
     public boolean isGhost(){ return ghost;}
     public float getHealth(){return health;}
     public void setScore(){score++;}
+    public void setScoreValue(int score){
+        this.score = score;
+    }
     public int getScore(){return score;}
 
     public String getId() {
@@ -73,5 +75,13 @@ public class Player extends Heroes {
 
     public void dispose() {
         this.img.dispose();
+    }
+
+    public void setHealth(float health) {
+        this.health = health;
+    }
+
+    public void setGhost(boolean ghost) {
+        this.ghost = ghost;
     }
 }

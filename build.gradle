@@ -75,6 +75,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     }
 }
 
@@ -86,5 +87,6 @@ project(":android") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
     }
 }

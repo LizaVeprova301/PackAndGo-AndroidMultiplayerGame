@@ -12,6 +12,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.badlogic.gdx.utils.Json;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.badlogic.gdx.utils.Timer;
 
 import org.java_websocket.handshake.ServerHandshake;
@@ -46,14 +47,18 @@ public class AndroidLauncher extends AndroidApplication {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 
+        EventListenerCallback callback = event -> {
+            messageProcessor.processEvent(event);
+        };
+
+        String wsUri = readWsUriFromProperties();
+        WebSocketClient webSocketClient = new WebSocketClient(getUri(wsUri), getWebsocketListener(callback));
+
+
         Main main = new Main(new InputStateImpl());
 
         messageProcessor = new MessageProcessor(main);
 
-
-        EventListenerCallback callback = event -> {
-            messageProcessor.processEvent(event);
-        };
 
 //        Timer timer = new Timer();
 //        timer.scheduleTask(new Timer.Task() {
@@ -63,10 +68,6 @@ public class AndroidLauncher extends AndroidApplication {
 //            }
 //        }, 0, 1);
 
-        String wsUri = readWsUriFromProperties();
-
-        try {
-            WebSocketClient webSocketClient = new WebSocketClient(new URI(wsUri), getWebsocketListener(callback));
 
 //            connectSocket(webSocketClient);
 
@@ -77,20 +78,23 @@ public class AndroidLauncher extends AndroidApplication {
 //                main.setSocketState(true);
 //            }
 
-            main.setMessageSender(message -> {
-                webSocketClient.send(toJson(message));
-            });
+        main.setMessageSender(message -> {
+            webSocketClient.send(toJson(message));
+        });
 
-            initialize(main, config);
+        initialize(main, config);
 
-            connectSocket(webSocketClient);
+        connectSocket(webSocketClient);
 
+    }
+
+    private URI getUri(String strUri){
+        try {
+            return new URI(strUri);
         } catch (URISyntaxException e) {
             Gdx.app.error("CONNECTION ERROR", "INCORRECT URL: " + e.getMessage());
             throw new RuntimeException(e);
         }
-
-
     }
 
     private WebSocketListener getWebsocketListener(EventListenerCallback callback){
@@ -106,6 +110,9 @@ public class AndroidLauncher extends AndroidApplication {
             @Override
             public void onConnect(ServerHandshake handshake) {
                 Gdx.app.log("CONNECTION CREATED","HTTP_STATUS: " + handshake.getHttpStatusMessage());
+                WsEvent wsEvent = new WsEvent();
+                wsEvent.setData("CONNECTION_OPENED");
+                callback.onEvent(wsEvent);
 //                timer.start();
             }
 
@@ -121,7 +128,7 @@ public class AndroidLauncher extends AndroidApplication {
             public void onError(Exception ex) {
                 Gdx.app.error("CONNECTION ERROR","ERROR_MESSAGE: " + ex.getMessage());
                 WsEvent wsEvent = new WsEvent();
-                wsEvent.setData("ERROR_OCCURED");
+                wsEvent.setData("ERROR_OCCURRED");
                 callback.onEvent(wsEvent);
             }
         };
@@ -129,9 +136,19 @@ public class AndroidLauncher extends AndroidApplication {
         return webSocketListener;
     }
 
-    private String toJson(Object object){
-        Json json = new Json();
-        return json.toJson(object);
+//    private String toJson(Object object){
+//        Json json = new Json();
+//        return json.toJson(object);
+//    }
+
+    private String toJson(Object object) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(object);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

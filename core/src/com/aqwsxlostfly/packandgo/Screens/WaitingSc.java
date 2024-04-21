@@ -5,7 +5,6 @@ import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.aqwsxlostfly.packandgo.InputState;
 import com.aqwsxlostfly.packandgo.Main;
 import com.aqwsxlostfly.packandgo.Tools.BulletGenerator;
-import com.aqwsxlostfly.packandgo.Tools.Joystick;
 import com.aqwsxlostfly.packandgo.Tools.Point2D;
 import com.aqwsxlostfly.packandgo.TouchProcessor;
 import com.badlogic.gdx.Gdx;
@@ -20,6 +19,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Timer;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class WaitingSc implements Screen {
 
@@ -27,7 +27,6 @@ public class WaitingSc implements Screen {
     Main main;
 
     public static ArrayList<Bullet> bullets;
-
     public static ObjectMap<String, Player> players = new ObjectMap<>();
 
 
@@ -86,15 +85,15 @@ public class WaitingSc implements Screen {
     @Override
     public void dispose() {
         Main.batch.dispose();
-        for (Player value : players.values()) {
+        for (Player value : Main.players.values()) {
             value.dispose();
         }
     }
 
 
     public void loadHeroes() {
-        Player me = new Player(Main.capibara, new Point2D(Main.screenWidth / 2, Main.screenHeight / 2), 10F, (float) (Main.screenHeight / 5), 5);
-        players.put(main.getMeId(), me);
+//        Player me = new Player(Main.capibara, new Point2D(Main.screenWidth / 2, Main.screenHeight / 2), 10F, (float) (Main.screenHeight / 5), 5);
+//        players.put(main.getMeId(), me);
         bullets = new ArrayList<Bullet>();
         bulletGenerator = new BulletGenerator();
         Timer timer = new Timer();
@@ -103,22 +102,32 @@ public class WaitingSc implements Screen {
             public void run() {
                 handleTimer();
             }
-        }, 0, 5);
+        }, 0, 1 / 60f);
     }
 
 
     public void gameUpdate() {
+//        Color cl = Color.RED;
 
-        Player player = players.get(main.getMeId());
+        players = Main.players;
+        for (String key : players.keys()) {
+            if(!Objects.equals(key, main.getMeId())){
+                players.get(key).update();
+            }else{
+                players.get(key).setDirection(inputProcessor.joy.getDir());
+                players.get(key).update();
+            }
 
-        if (player == null) {
-            String id = "666";
-            player = new Player(Main.capibara, new Point2D(Main.screenWidth / 2, Main.screenHeight / 2), 10F, (float) (Main.screenHeight / 5), 5);
-            players.put(id, player);
-        } else {
-            player.setDirection(inputProcessor.joy.getDir());
-            player.update();
         }
+
+//        if (player == null) {
+//            String id = main.getMeId();
+//            player = new Player(Main.capibara, new Point2D(Main.screenWidth / 2, Main.screenHeight / 2), 10F, (float) (Main.screenHeight / 5), 5);
+//            Main.players.put(id, player);
+//        } else {
+//            player.setDirection(inputProcessor.joy.getDir());
+//            player.update();
+//        }
 
         bulletGenerator.update(inputProcessor.joyBullet);
         for (int i = 0; i < bullets.size(); i++) {
@@ -130,14 +139,16 @@ public class WaitingSc implements Screen {
     }
 
     public void gameRender(SpriteBatch batch) {
-        if (!main.getSocketState()){
-            font.draw(batch, textErrorWsConnection, Main.screenWidth / 2 - textErrorWsConnection.width / 2, Main.screenHeight -Main.screenHeight/10);
-        } else if (players.size < 2) {
+//        if (!main.getSocketState()){
+//            font.draw(batch, textErrorWsConnection, Main.screenWidth / 2 - textErrorWsConnection.width / 2, Main.screenHeight -Main.screenHeight/10);
+//        } else
+        if (players.size < 2) {
             font.draw(batch, textWaiting, Main.screenWidth / 2 - textWaiting.width / 2, Main.screenHeight -Main.screenHeight/10);
         } else {
             font.draw(batch, textJoin, Main.screenWidth / 2 - textWaiting.width / 2, Main.screenHeight -Main.screenHeight/10 );
         }
         for (String key : players.keys()) {
+//            Gdx.app.log("PLAYER", String.valueOf(Main.players.get(key).position));
             players.get(key).draw(batch);
         }
         inputProcessor.joy.draw(batch);
@@ -151,14 +162,9 @@ public class WaitingSc implements Screen {
         if (inputProcessor != null && !players.isEmpty()) {
             Player me = players.get(main.getMeId());
             InputState playerState = inputProcessor.updateAndGetInputState(me);
+            Gdx.app.log("SEND MESSAGE", "HANDLE TIMER, send state");
             main.messageSender.sendMessage(playerState);
         }
-    }
-
-
-
-    public void evict(String idToEvict) {
-        players.remove(idToEvict);
     }
 
 

@@ -7,7 +7,7 @@ import java.net.URI;
 public class WebSocketClient extends org.java_websocket.client.WebSocketClient {
     private WebSocketListener webSocketListener;
 
-    private static final int MAX_RECONNECT_ATTEMPTS = 3;
+//    private static final int MAX_RECONNECT_ATTEMPTS = 3;
 
     //    public void connectSocket() {
 //        isConnecting = true;

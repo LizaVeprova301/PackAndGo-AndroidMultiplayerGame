@@ -1,12 +1,10 @@
 package com.aqwsxlostfly.packandgo;
 
-import com.aqwsxlostfly.packandgo.Tools.Circle;
-import com.aqwsxlostfly.packandgo.Tools.Point2D;
 
 public interface InputState {
 
-    void setPosition(Point2D pos);
-    Point2D getPosition();
+    void setType(String type);
+    String getType();
 
     void setScore(int score);
     int getScore();
@@ -22,4 +20,10 @@ public interface InputState {
 
     void setSpeed(float speed);
     float getSpeed();
+
+    void setX(float x);
+    float getX();
+
+    void setY(float y);
+    float getY();
 }

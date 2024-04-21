@@ -1,5 +1,9 @@
 package com.aqwsxlostfly.packandgo.packandgo.GameState;
-public class Point2D {
+
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+
+public class Point2D implements Json.Serializable{
     private float x, y;
 
     public Point2D(Point2D p){
@@ -51,6 +55,17 @@ public class Point2D {
 
     public void setY(float y) {
         this.y = y;
+    }
+
+    @Override
+    public void write(Json json) {
+        json.writeValue("x", x);
+        json.writeValue("y", y);
+    }
+
+    @Override
+    public void read(Json json, JsonValue jsonData) {
+
     }
 }
 
