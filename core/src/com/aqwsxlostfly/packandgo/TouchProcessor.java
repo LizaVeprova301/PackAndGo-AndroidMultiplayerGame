@@ -67,14 +67,10 @@ public class TouchProcessor implements InputProcessor {
     }
 
     public InputState updateAndGetInputState(Player player) {
-        inputState.setType("state");
+        inputState.setType("playerState");
         inputState.setX(player.position.getX());
         inputState.setY(player.position.getY());
-        inputState.setGhost(player.isGhost());
-        inputState.setHealth(player.getHealth());
-        inputState.setRadius(player.radius);
         inputState.setScore(player.getScore());
-        inputState.setSpeed(player.speed);
         return inputState;
     }
 

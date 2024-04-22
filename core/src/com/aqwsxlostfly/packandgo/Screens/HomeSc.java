@@ -3,7 +3,7 @@ package com.aqwsxlostfly.packandgo.Screens;
 
 import com.aqwsxlostfly.packandgo.Main;
 import com.aqwsxlostfly.packandgo.SessionState;
-import com.aqwsxlostfly.packandgo.SessionStateImpl;
+import com.aqwsxlostfly.packandgo.SessionStateToSend;
 import com.aqwsxlostfly.packandgo.Tools.FlyingObject;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -11,7 +11,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -77,7 +76,6 @@ public class HomeSc implements Screen {
 
         flyingObjects = new ArrayList<FlyingObject>();
 
-        // Создаем объекты
         for (int i = 0; i < 12; i++) {
             Texture texture = getRandomTexture();
             FlyingObject object = new FlyingObject(new TextureRegion(texture));
@@ -257,11 +255,11 @@ public class HomeSc implements Screen {
     private void connectToServer(String password, String roomId, boolean isCreating) {
         if (isCreating) {
             Gdx.app.log("CREATE ROOM", "Creating a room with ID: " + roomId + " and password: " + password);
-            SessionState sessionState = new SessionStateImpl("create_room", roomId, password);
+            SessionState sessionState = new SessionStateToSend("createRoom", roomId, password);
             main.messageSender.sendMessage(sessionState);
         } else {
             Gdx.app.log("JOIN ROOM", "Joining a room with ID: " + roomId + " and password: " + password);
-            SessionState sessionState = new SessionStateImpl("join_room", roomId, password);
+            SessionState sessionState = new SessionStateToSend("joinRoom", roomId, password);
             main.messageSender.sendMessage(sessionState);
         }
     }
@@ -283,7 +281,7 @@ public class HomeSc implements Screen {
 
     public void showState(){
         Gdx.app.log("SESSION_STATE", main.gameSession.getId() + "   " + main.gameSession.getPassword() + "   " +
-                main.gameSession.getSessionErrorMsg() +"   " + main.gameSession.getConnected() + "   " + main.gameSession.getPlayersAmount());
+                main.gameSession.getSessionMsg() +"   " + main.gameSession.getConnected() );
     }
 
     @Override

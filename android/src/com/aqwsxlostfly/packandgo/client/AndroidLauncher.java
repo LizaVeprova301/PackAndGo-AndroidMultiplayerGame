@@ -11,9 +11,7 @@ import com.aqwsxlostfly.packandgo.client.ws.WsEvent;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.badlogic.gdx.utils.Json;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.badlogic.gdx.utils.Timer;
 
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -59,25 +57,6 @@ public class AndroidLauncher extends AndroidApplication {
 
         messageProcessor = new MessageProcessor(main);
 
-
-//        Timer timer = new Timer();
-//        timer.scheduleTask(new Timer.Task() {
-//            @Override
-//            public void run() {
-//                main.handleTimer();
-//            }
-//        }, 0, 1);
-
-
-//            connectSocket(webSocketClient);
-
-//            main.setSocketState(webSocketClient.isOpen());
-//            Gdx.app.log("WS STATUS", "Status: " + main.getSocketState());
-
-//            if (webSocketClient.isOpen()){
-//                main.setSocketState(true);
-//            }
-
         main.setMessageSender(message -> {
             webSocketClient.send(toJson(message));
         });
@@ -88,7 +67,7 @@ public class AndroidLauncher extends AndroidApplication {
 
     }
 
-    private URI getUri(String strUri){
+    private URI getUri(String strUri) {
         try {
             return new URI(strUri);
         } catch (URISyntaxException e) {
@@ -97,7 +76,7 @@ public class AndroidLauncher extends AndroidApplication {
         }
     }
 
-    private WebSocketListener getWebsocketListener(EventListenerCallback callback){
+    private WebSocketListener getWebsocketListener(EventListenerCallback callback) {
         WebSocketListener webSocketListener = new WebSocketListener() {
             @Override
             public void onMessageReceived(String message) {
@@ -109,11 +88,10 @@ public class AndroidLauncher extends AndroidApplication {
 
             @Override
             public void onConnect(ServerHandshake handshake) {
-                Gdx.app.log("CONNECTION CREATED","HTTP_STATUS: " + handshake.getHttpStatusMessage());
+                Gdx.app.log("CONNECTION CREATED", "HTTP_STATUS: " + handshake.getHttpStatusMessage());
                 WsEvent wsEvent = new WsEvent();
                 wsEvent.setData("CONNECTION_OPENED");
                 callback.onEvent(wsEvent);
-//                timer.start();
             }
 
             @Override
@@ -126,7 +104,7 @@ public class AndroidLauncher extends AndroidApplication {
 
             @Override
             public void onError(Exception ex) {
-                Gdx.app.error("CONNECTION ERROR","ERROR_MESSAGE: " + ex.getMessage());
+                Gdx.app.error("CONNECTION ERROR", "ERROR_MESSAGE: " + ex.getMessage());
                 WsEvent wsEvent = new WsEvent();
                 wsEvent.setData("ERROR_OCCURRED");
                 callback.onEvent(wsEvent);
@@ -135,11 +113,6 @@ public class AndroidLauncher extends AndroidApplication {
 
         return webSocketListener;
     }
-
-//    private String toJson(Object object){
-//        Json json = new Json();
-//        return json.toJson(object);
-//    }
 
     private String toJson(Object object) {
         ObjectMapper mapper = new ObjectMapper();

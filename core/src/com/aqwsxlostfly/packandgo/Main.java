@@ -3,14 +3,12 @@ package com.aqwsxlostfly.packandgo;
 
 import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.aqwsxlostfly.packandgo.Screens.HomeSc;
-import com.aqwsxlostfly.packandgo.Screens.WaitingSc;
 import com.aqwsxlostfly.packandgo.Tools.Point2D;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ObjectMap;
 
 import java.util.Objects;
@@ -117,7 +115,7 @@ public class Main extends Game {
     }
 
 
-    public void updatePlayerArray(String id, float x_, float y_, int score, float health, float speed, float radius, boolean ghost) {
+    public void updatePlayerArray(String id, float x_, float y_) {
         Player player = Main.players.get(id);
         if (player == null) {
             Main.players.put(id, new Player(Main.capibara, new Point2D(Main.screenWidth / 2, Main.screenHeight / 2), 10F, (float) (Main.screenHeight / 5), 5));

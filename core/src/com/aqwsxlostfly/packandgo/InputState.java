@@ -9,18 +9,6 @@ public interface InputState {
     void setScore(int score);
     int getScore();
 
-    void setHealth(float health);
-    float getHealth();
-
-    void setGhost(boolean isGhost);
-    boolean getGhost();
-
-    void setRadius(float radius);
-    float getRadius();
-
-    void setSpeed(float speed);
-    float getSpeed();
-
     void setX(float x);
     float getX();
 

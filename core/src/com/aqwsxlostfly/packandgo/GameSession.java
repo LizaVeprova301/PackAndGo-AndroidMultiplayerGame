@@ -4,9 +4,7 @@ public class GameSession {
     private String id;
     private String password;
     private Boolean isConnected;
-
-    private String sessionErrorMsg;
-    private Integer playersAmount;
+    private String sessionMsg;
 
     public GameSession(Boolean isConnected) {
         this.isConnected = isConnected;
@@ -36,19 +34,11 @@ public class GameSession {
         isConnected = connected;
     }
 
-    public String getSessionErrorMsg() {
-        return sessionErrorMsg;
+    public String getSessionMsg() {
+        return sessionMsg;
     }
 
-    public void setSessionErrorMsg(String sessionErrorMsg) {
-        this.sessionErrorMsg = sessionErrorMsg;
-    }
-
-    public Integer getPlayersAmount() {
-        return playersAmount;
-    }
-
-    public void setPlayersAmount(Integer playersAmount) {
-        this.playersAmount = playersAmount;
+    public void setSessionMsg(String sessionMsg) {
+        this.sessionMsg = sessionMsg;
     }
 }

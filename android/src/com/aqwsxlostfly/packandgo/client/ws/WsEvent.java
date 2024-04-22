@@ -3,9 +3,11 @@ package com.aqwsxlostfly.packandgo.client.ws;
 public class WsEvent {
 
     private String data;
-    public WsEvent() {}
 
-    public final String getData(){
+    public WsEvent() {
+    }
+
+    public final String getData() {
         return this.data;
     }
 

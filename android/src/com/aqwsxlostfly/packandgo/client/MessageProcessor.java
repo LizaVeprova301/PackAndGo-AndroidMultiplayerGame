@@ -41,26 +41,20 @@ public class MessageProcessor {
 
     private void processObject(JsonValue object) {
         String type = object.getString("class", null);
-        String classtype = object.getString("classtype", null);
-        if (type == null){
-            type = classtype;
-        }
         if (type != null) {
             switch (type) {
                 case "sessionKey":
                     String meId = object.getString("id");
                     main.setMeId(meId);
                     break;
-                case "mysession":
-                    String sesid = object.getString("sesid");
-                    String password = object.getString("password");
-                    String playersAmount = object.getString("playersAmount");
-                    String sessionErrorMsg = object.getString("sessionErrorMsg");
+                case "sessionRoom":
+                    String sessionId = object.getString("id");
+                    String sessionPassword = object.getString("password");
+                    String sessionMsg = object.getString("msg");
                     main.gameSession.setConnected(true);
-                    main.gameSession.setId(sesid);
-                    main.gameSession.setPassword(password);
-                    main.gameSession.setPlayersAmount(Integer.valueOf(playersAmount));
-                    main.gameSession.setSessionErrorMsg(sessionErrorMsg);
+                    main.gameSession.setId(sessionId);
+                    main.gameSession.setPassword(sessionPassword);
+                    main.gameSession.setSessionMsg(sessionMsg);
                     break;
                 case "evict":
                     String idToEvict = object.getString("id");
@@ -70,12 +64,7 @@ public class MessageProcessor {
                     String id = object.getString("id");
                     float x = object.getFloat("x");
                     float y = object.getFloat("y");
-                    int score = object.getInt("score");
-                    float health = object.getFloat("health");
-                    float speed = object.getFloat("speed");
-                    float radius = object.getFloat("radius");
-                    boolean ghost = object.getBoolean("ghost");
-                    main.updatePlayerArray(id, x, y, score, health, speed, radius, ghost);
+                    main.updatePlayerArray(id, x, y);
                     break;
                 default:
                     throw new RuntimeException("Unknown message type " + type);

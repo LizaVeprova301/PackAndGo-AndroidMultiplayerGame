@@ -1,12 +1,12 @@
 package com.aqwsxlostfly.packandgo;
 
-public class SessionStateImpl implements SessionState{
+public class SessionStateToSend implements SessionState{
 
     private String type;
     private String Id;
     private String password;
 
-    public SessionStateImpl(String type, String id, String password) {
+    public SessionStateToSend(String type, String id, String password) {
         this.type = type;
         Id = id;
         this.password = password;
