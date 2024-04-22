@@ -2,9 +2,9 @@ package com.aqwsxlostfly.packandgo.packandgo.Ws;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.JsonValue;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -12,6 +12,9 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.adapter.standard.StandardWebSocketSession;
 import org.springframework.web.socket.handler.AbstractWebSocketHandler;
 
+import static com.aqwsxlostfly.packandgo.packandgo.Constants.LogConstants.*;
+
+@Slf4j
 @Component
 public class MyWebSocketHandler extends AbstractWebSocketHandler {
 
@@ -35,7 +38,7 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
             connectListener.handle(standardWebSocketSession);
         }
 
-        Gdx.app.log("CONNECTION", " NEW CONNECTION: " + " sessionID " + session.getId() + " headers " +
+        Gdx.app.log(CONNECTION_TAG, " NEW CONNECTION: " + " sessionID " + session.getId() + " headers " +
                 session.getHandshakeHeaders() + " protocols " + session.getAcceptedProtocol() + " sizeBynaryLimit " +
                 session.getBinaryMessageSizeLimit() + " clientIP " + session.getRemoteAddress());
     }
@@ -43,7 +46,7 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
-        Gdx.app.log("MESSAGE", " NEW MESSAGE: " + message.getPayload() + "\n\n" + " sessionID " + session.getId()
+        Gdx.app.log(MESSAGE_TAG, " NEW MESSAGE: " + message.getPayload() + "\n\n" + " sessionID " + session.getId()
                 + " headers " + session.getHandshakeHeaders() + " protocols " + session.getAcceptedProtocol()
                 + " sizeTextLimit " + session.getTextMessageSizeLimit() + " clientIP " + session.getRemoteAddress());
 
@@ -65,7 +68,7 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
             disconnectListener.handle(standardWebSocketSession);
         }
 
-        Gdx.app.log("CLOSED CONNECTION", " CLOSED CONNECTION: " + " sessionID " + session.getId() + " headers " +
+        Gdx.app.log(DISCONNECTION_TAG, " CLOSED CONNECTION: " + " sessionID " + session.getId() + " headers " +
                 session.getHandshakeHeaders() + " protocols " + session.getAcceptedProtocol() + " sizeBynaryLimit " +
                 session.getBinaryMessageSizeLimit() + " clientIP " + session.getRemoteAddress());
     }

@@ -1,14 +1,16 @@
 package com.aqwsxlostfly.packandgo.packandgo.Config;
 
 import com.aqwsxlostfly.packandgo.packandgo.GameLoop;
-import com.aqwsxlostfly.packandgo.packandgo.GameSession;
-import com.aqwsxlostfly.packandgo.packandgo.GameState.Player;
+import com.aqwsxlostfly.packandgo.packandgo.GameStateTools.Player;
+import com.aqwsxlostfly.packandgo.packandgo.Sessions.GameSessionToSend;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 public class AppConfig {
     @Bean
@@ -21,7 +23,7 @@ public class AppConfig {
         Json json = new Json();
         json.setOutputType(JsonWriter.OutputType.json);
         json.addClassTag("player", Player.class);
-//        json.addClassTag("mysession", GameSession.class);
+        json.addClassTag("sessionRoom", GameSessionToSend.class);
         return json;
     }
 }

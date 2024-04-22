@@ -1,12 +1,12 @@
-package com.aqwsxlostfly.packandgo.packandgo.GameState;
+package com.aqwsxlostfly.packandgo.packandgo.GameStateTools;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-public class Point2D implements Json.Serializable{
+public class Point2D implements Json.Serializable {
     private float x, y;
 
-    public Point2D(Point2D p){
+    public Point2D(Point2D p) {
         x = p.getX();
         y = p.getY();
     }
@@ -26,17 +26,17 @@ public class Point2D implements Json.Serializable{
         this.y += p.getY();
     }
 
-    public void setPoint(Point2D p){
+    public void setPoint(Point2D p) {
         x = p.getX();
         y = p.getY();
     }
 
-    public void setPoint(float x, float y){
+    public void setPoint(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    public Point2D getPoint(){
+    public Point2D getPoint() {
         return this;
     }
 
