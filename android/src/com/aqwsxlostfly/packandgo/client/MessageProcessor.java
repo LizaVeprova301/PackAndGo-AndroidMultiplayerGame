@@ -64,7 +64,7 @@ public class MessageProcessor {
                     String id = object.getString("id");
                     float x = object.getFloat("x");
                     float y = object.getFloat("y");
-                    main.updatePlayerArray(id, x, y);
+                    main.renderer.getCurrentScreen().updatePlayerArray(id, x, y);
                     break;
                 default:
                     throw new RuntimeException("Unknown message type " + type);
