@@ -43,6 +43,9 @@ public class GameSessionManager {
 
     public void updateGameSession(String userId, JsonNode state) {
         String sessionId = getSessionIdByUserId(userId);
+        Gdx.app.log("updateGameSession", "userId " + userId + " sessionId " + sessionId + " state " + state);
+
+
         if (activeGameSessions.containsKey(sessionId)) {
             activeGameSessions.get(sessionId).updateGameState(state);
         } else {
@@ -59,7 +62,10 @@ public class GameSessionManager {
             return;
         }
         if (!userToSession.containsKey(userId)) {
+            Gdx.app.log("JOIN SESSION", "userId " + userId + " sesPsw " + sessionPassword
+                    + " sesActualPsw " + activeGameSessions.get(sessionId).getSessionPassword());
             if (Objects.equals(sessionPassword, activeGameSessions.get(sessionId).getSessionPassword())) {
+                Gdx.app.log("JOIN SESSION AFTER PSW", "userId " + userId );
                 userToSession.put(userId, sessionId);
                 activeGameSessions.get(sessionId).addUserSession(userId);
             } else {

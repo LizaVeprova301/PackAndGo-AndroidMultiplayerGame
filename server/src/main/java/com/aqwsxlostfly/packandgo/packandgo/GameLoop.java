@@ -26,7 +26,7 @@ public class GameLoop extends ApplicationAdapter {
     private final MyWebSocketHandler socketHandler;
     private final Json json;
 
-    private static final float frameRate = 1 / 60f;
+    private static final float frameRate = 1/60f;
     private float lastRender = 0;
     private final ForkJoinPool pool = ForkJoinPool.commonPool();
 
@@ -87,6 +87,7 @@ public class GameLoop extends ApplicationAdapter {
                     String stateJson = json.toJson(stateToSend);
                     ArrayList<String> usersInSession = new ArrayList<>(gameSession.getActiveUserSessions().keySet());
                     sendToEverybodyInSession(stateJson, usersInSession);
+//                    sendToEverybody(stateJson);
                 });
             }
 

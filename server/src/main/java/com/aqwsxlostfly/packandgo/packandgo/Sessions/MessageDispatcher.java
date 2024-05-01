@@ -22,14 +22,24 @@ public class MessageDispatcher {
         String type = message.get("type").asText();
         switch (type) {
             case "createRoom":
+
                 String sessionId = message.get("sessionId").asText();
                 String sessionPassword = message.get("sessionPassword").asText();
                 gameSessionManager.createGameSession(userId, sessionId, sessionPassword, 2, session);
+                Gdx.app.log("Create ROOM", "sesID " + sessionId + " sesPass "+ sessionPassword +
+                        "  playersSizez " + gameSessionManager.getActiveGameSessions().get(sessionId).getGameState().getPlayersObjectMap().size);
                 break;
             case "joinRoom":
-                String sessionJoinId = message.get("id").asText();
-                String sessionJoinPassword = message.get("password").asText();
+
+
+                String sessionJoinId = message.get("sessionId").asText();
+                String sessionJoinPassword = message.get("sessionPassword").asText();
+                Gdx.app.log("JOIN SESSION processMessage", "sessionJoinId " + sessionJoinId + " sesPsw" + sessionJoinPassword );
+
                 gameSessionManager.joinGameSession(userId, sessionJoinId, sessionJoinPassword);
+
+                Gdx.app.log("JOIN ROOM", "sesID " + sessionJoinId + " sesPass "+ sessionJoinPassword +
+                        "  playersSizez " + gameSessionManager.getActiveGameSessions().get(sessionJoinId).getGameState().getPlayersObjectMap().size);
                 break;
             case "playerState":
             case "furnitureState":
