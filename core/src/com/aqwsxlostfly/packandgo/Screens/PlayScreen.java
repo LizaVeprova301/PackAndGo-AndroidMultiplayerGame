@@ -9,10 +9,13 @@ import static com.aqwsxlostfly.packandgo.Main.screenWidth;
 import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.aqwsxlostfly.packandgo.InputState;
 import com.aqwsxlostfly.packandgo.Main;
+import com.aqwsxlostfly.packandgo.Tools.GameHud;
 import com.aqwsxlostfly.packandgo.Tools.Joystick;
 import com.aqwsxlostfly.packandgo.Tools.Point2D;
 import com.aqwsxlostfly.packandgo.Tools.TileMapHelper;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -34,6 +37,7 @@ public class PlayScreen implements Screen {
     private final TileMapHelper tileMapHelper;
 
     private static final float frameRate = 1/60f;
+    public GameHud gameHud;
 
 //    public final Player player;
     private Player line;
@@ -54,16 +58,17 @@ public class PlayScreen implements Screen {
         hudCamera.position.set(screenWidth / 2, screenHeight / 2, 0);
         hudCamera.update();
 
+
         this.tileMapHelper = new TileMapHelper();
         orthogonalTiledMapRenderer = tileMapHelper.setupMap();
 
         updatePlayerArray(meId, 0,0);
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        gameHud = new GameHud(players.get(meId)); // (или передайте player если он нужен для инициализации GameHud)
+        inputMultiplexer.addProcessor(gameHud.stage); // Первый обработчик, чтобы убедиться, что UI имеет приоритет
+        inputMultiplexer.addProcessor(new InputAdapter() { // Ваш текущий обработчик событий в PlayScreen
+            // Здесь ваш обработчик событий...
 
-//        this.player = tileMapHelper.getPlayer();
-
-//        this.line = tileMapHelper.getLine();
-
-        Gdx.input.setInputProcessor(new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
                 return false;
@@ -113,8 +118,11 @@ public class PlayScreen implements Screen {
                 return false;
             }
         });
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
         loadHeroes();
+
+
     }
 
     public void updatePlayerArray(String id, float x_, float y_) {
@@ -179,6 +187,8 @@ public class PlayScreen implements Screen {
         batch.setProjectionMatrix(hudCamera.combined);
 
         joy.draw(batch); // Рисуем джойстик с использованием камеры HUD
+        gameHud.update(Math.min(1 / 30F, 1 / 30f));
+        gameHud.draw();
     }
 
     public void updatePlayers(){
@@ -190,7 +200,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        gameHud.dispose();
     }
 
     public void loadHeroes() {
