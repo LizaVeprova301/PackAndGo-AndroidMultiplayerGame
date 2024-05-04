@@ -94,13 +94,13 @@
 //        players.put(main.getMeId(), me);
 ////        bullets = new ArrayList<Bullet>();
 ////        bulletGenerator = new BulletGenerator();
-////        Timer timer = new Timer();
-////        timer.scheduleTask(new Timer.Task() {
-////            @Override
-////            public void run() {
-////                handleTimer();
-////            }
-////        }, 0, 1 / 60f);
+//        Timer timer = new Timer();
+//        timer.scheduleTask(new Timer.Task() {
+//            @Override
+//            public void run() {
+//                handleTimer();
+//            }
+//        }, 0, 1 / 60f);
 //    }
 //
 //

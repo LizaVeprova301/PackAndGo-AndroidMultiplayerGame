@@ -19,4 +19,6 @@ public interface Screen {
     default Player getPlayer(Player player){
         return player;
     }
+
+    void updatePlayerArray(String id, float x, float y);
 }

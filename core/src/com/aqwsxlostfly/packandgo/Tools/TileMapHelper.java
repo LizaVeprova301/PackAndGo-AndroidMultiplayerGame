@@ -28,7 +28,10 @@ public class TileMapHelper {
     public static int worldHeight;
     public static int worldWigth;
     private Player player;
-    private Player line;
+    private Player tabouret;
+
+//    private Body body;
+//    private TextureMapObject textureMapObject;
     private final World world;
 
     public TileMapHelper() {
@@ -84,16 +87,31 @@ public class TileMapHelper {
 
                 body.setTransform(textureMapObject.getX(), textureMapObject.getY(), 0);
 
-                player = new Player(body, textureMapObject);
-            } else if (textureMapObjectName != null && textureMapObjectName.equals("tabouret")) {
+//                this.body =  body;
+//                this.textureMapObject = textureMapObject;
 
-                Body body = BodyHelperService.createBody(textureMapObject,
+                player = new Player(body, textureMapObject);
+
+                TextureMapObject textureMapObject_t = ((TextureMapObject) mapObject);
+
+                Body body_t = BodyHelperService.createBody(textureMapObject_t,
                         world, false);
 
-                textureMapObject.setScaleX(1.5f);
-                textureMapObject.setScaleY(0.5f);
+                body_t.setTransform(textureMapObject_t.getX() + 1, textureMapObject_t.getY(), 0);
 
-//                tabouret = new Player(body, textureMapObject);
+                tabouret = new Player(body_t, textureMapObject_t);
+
+            } else if (textureMapObjectName != null && textureMapObjectName.equals("tabouret")) {
+
+                Body body_t = BodyHelperService.createBody(textureMapObject,
+                        world, false);
+
+                body_t.setTransform(textureMapObject.getX(), textureMapObject.getY(), 0);
+
+//                textureMapObject.setScaleX(1.5f);
+//                textureMapObject.setScaleY(0.5f);
+
+//                tabouret = new Player(body_t, textureMapObject);
 
             }
 
@@ -101,7 +119,23 @@ public class TileMapHelper {
     }
 
     public Player getPlayer() {
+
+        Gdx.app.log("ADD NEW PLAYER", "GET NEW PLAYER IN TILE MAP MEE");
+
+
+//        return new Player(this.body, this.textureMapObject);
+
         return player;
+    }
+
+    public Player getOtherPlayer() {
+
+        Gdx.app.log("ADD NEW PLAYER", "GET NEW PLAYER IN TILE MAP TABOURET");
+
+
+//        return new Player(this.body, this.textureMapObject);
+
+        return tabouret;
     }
 
     private Shape createRectangleShape(RectangleMapObject rectangleMapObject) {
@@ -111,7 +145,5 @@ public class TileMapHelper {
         return shape;
     }
 
-    public Player getLine() {
-        return line;
-    }
+
 }

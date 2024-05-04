@@ -2,10 +2,12 @@ package com.aqwsxlostfly.packandgo.Screens;
 
 
 import static com.aqwsxlostfly.packandgo.Main.meId;
+import static com.aqwsxlostfly.packandgo.Main.messageSender;
 import static com.aqwsxlostfly.packandgo.Main.screenHeight;
 import static com.aqwsxlostfly.packandgo.Main.screenWidth;
 
 import com.aqwsxlostfly.packandgo.Heroes.Player;
+import com.aqwsxlostfly.packandgo.InputState;
 import com.aqwsxlostfly.packandgo.Main;
 import com.aqwsxlostfly.packandgo.Tools.Joystick;
 import com.aqwsxlostfly.packandgo.Tools.Point2D;
@@ -18,14 +20,20 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.badlogic.gdx.utils.Timer;
 
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayScreen implements Screen {
 
     Joystick joy;
     private final TileMapHelper tileMapHelper;
+
+    private static final float frameRate = 1/60f;
 
 //    public final Player player;
     private Player line;
@@ -110,17 +118,25 @@ public class PlayScreen implements Screen {
     }
 
     public void updatePlayerArray(String id, float x_, float y_) {
-        Player player = players.get(id);
-        if (player == null) {
+
+        Gdx.app.log("updatePlayerArray", "id " + id + " x " + x_ + " y " + y_ );
+
+//        Player player = players.get(id);
+        if (players.get(id) == null) {
+            Gdx.app.log("ADD NEW PLAYER", "id " + id + " x " + x_ + " y " + y_ );
 //            Main.players.put(id, new Player(Main.capibara, new Point2D(Main.screenWidth / 2, Main.screenHeight / 2), 10F, (float) (Main.screenHeight / 5), 5));
-            players.put(id, tileMapHelper.getPlayer());
+            if (Objects.equals(id, meId)){
+                players.put(id, tileMapHelper.getPlayer());
+            }else{
+                players.put(id, tileMapHelper.getOtherPlayer());
+            }
         } else if (!Objects.equals(id, meId)){
             Gdx.app.log("UPDATE GAME STATE ARRAY", "NEW MSG SERVER STATE" + "new x " + x_ + " new y " + y_ );
-            player.setDirection(new Point2D(x_, y_));
+//            player.setDirection(new Point2D(x_, y_));
 //            player.setScoreValue(score);
 //            player.setHealth(health);
 //            player.setGhost(ghost);
-            player.update();
+            players.get(id).testUpdate(x_, y_);
         }
     }
 
@@ -142,25 +158,19 @@ public class PlayScreen implements Screen {
 
     public void render(SpriteBatch batch, OrthographicCamera camera) {
 
-        for (String key : players.keys()) {
-            if(!Objects.equals(key, meId)){
-                players.get(key).update();
-            }else{
-                players.get(key).setDirection(joy.getDir());
-                players.get(key).update();
-            }
+        updatePlayers();
 
-        }
-
-        cameraUpdate(camera); // Обновляем камеру игры
+        cameraUpdate(camera);
 
         orthogonalTiledMapRenderer.setView(camera); // Устанавливаем камеру для рендерера карты
         orthogonalTiledMapRenderer.render(); // Рендерим карту
 
-//        player.draw(batch);
+//        for (String key : players.keys()) {
+//            players.get(key).draw(batch);
+//        }
 
-        for (String key : players.keys()) {
-//            Gdx.app.log("PLAYER", String.valueOf(Main.players.get(key).position));
+        Array<String> keys = new Array<>(players.keys().toArray());
+        for (String key : keys) {
             players.get(key).draw(batch);
         }
 
@@ -171,7 +181,10 @@ public class PlayScreen implements Screen {
         joy.draw(batch); // Рисуем джойстик с использованием камеры HUD
     }
 
-
+    public void updatePlayers(){
+        players.get(meId).setDirection(joy.getDir());
+        players.get(meId).update();
+    }
 
 
 
@@ -186,6 +199,14 @@ public class PlayScreen implements Screen {
                 new Texture("circle.png"),
                 new Point2D(((screenHeight / 3) / 2 + (screenHeight / 3) / 4),
                         (screenHeight / 3) / 2 + (screenHeight / 3) / 4), screenHeight / 3);
+
+        Timer timer = new Timer();
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                handleTimer();
+            }
+        }, 0, frameRate);
     }
 
     private void cameraUpdate(OrthographicCamera camera) {
@@ -217,6 +238,25 @@ public class PlayScreen implements Screen {
 
     private float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
+    }
+    public void handleTimer() {
+        if (!players.isEmpty()) {
+            Player me = players.get(meId);
+            InputState playerState = updateAndGetInputState(me);
+            Gdx.app.log("SEND MESSAGE", "HANDLE TIMER, send state");
+            messageSender.sendMessage(playerState);
+        }
+    }
+
+    public InputState updateAndGetInputState(Player player) {
+        InputState inputState = Main.inputState;
+
+        inputState.setType("playerState");
+        inputState.setId(meId);
+        inputState.setX(player.getX());
+        inputState.setY(player.getY());
+
+        return inputState;
     }
 }
 

@@ -1,6 +1,8 @@
 package com.aqwsxlostfly.packandgo.render;
 
+import com.aqwsxlostfly.packandgo.Screens.HomeSc;
 import com.aqwsxlostfly.packandgo.Screens.PlayScreen;
+import com.aqwsxlostfly.packandgo.Screens.Screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -15,7 +17,11 @@ public class Renderer {
 
     private final OrthographicCamera camera;
 
-    private PlayScreen currentScreen;
+    private static PlayScreen gameScreen;
+
+    private HomeSc homeScreen;
+
+    private static Screen currentScreen;
 
     private BitmapFont font;
 
@@ -32,36 +38,70 @@ public class Renderer {
 
     }
 
-    public PlayScreen getCurrentScreen() {
-        return currentScreen;
+    public Screen getCurrentScreen() {
+        return homeScreen;
     }
 
-    public void setCurrentScreen(PlayScreen currentScreen) {
-        this.currentScreen = currentScreen;
+    public Screen getGameScreen() {
+        return gameScreen;
+    }
+
+    public void setCurrentScreen(Screen currentScreen) {
+        currentScreen = currentScreen;
     }
 
     public void render() {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
-        batch.begin();
+        if (currentScreen instanceof HomeSc){
+            homeScreen.render(batch, camera);
+        }else{
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+            batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
+            batch.begin();
+
+//        SpriteBatch spriteBatch = new SpriteBatch();
+//            spriteBatch.begin();
+
+//        spriteBatch.end();
+            gameScreen.render(batch, camera);
+
+//        batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
+
+
+            batch.end();
+        }
+
+
+//        Gdx.gl.glClearColor(0, 0, 0, 1);
+//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+//        batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
+//        batch.begin();
 
 //        SpriteBatch spriteBatch = new SpriteBatch();
 //        spriteBatch.begin();
 
 //        spriteBatch.end();
-        currentScreen.render(batch, camera);
+//        homeScreen.render(batch, camera);
 
 //        batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
 
 
-        batch.end();
+//        batch.end();
     }
 
-    public void setScreen(PlayScreen screen) {
-        currentScreen = screen;
-//        currentScreen.screenToChange(newScreen -> currentScreen = newScreen);
+    public void setHomeScreen(HomeSc screen) {
+        homeScreen = screen;
+        currentScreen = homeScreen;
+//        homeScreen.screenToChange(newScreen -> homeScreen = (HomeSc) screen);
+    }
+
+    public static void setGameScreen(PlayScreen screen) {
+        gameScreen = screen;
+        currentScreen = gameScreen;
+//        gameScreen.screenToChange(newScreen -> gameScreen = (PlayScreen) screen);
     }
 
 }

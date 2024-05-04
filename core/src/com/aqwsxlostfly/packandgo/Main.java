@@ -2,11 +2,13 @@ package com.aqwsxlostfly.packandgo;
 
 
 
+import com.aqwsxlostfly.packandgo.Screens.HomeSc;
 import com.aqwsxlostfly.packandgo.Screens.PlayScreen;
 import com.aqwsxlostfly.packandgo.Tools.Point2D;
 import com.aqwsxlostfly.packandgo.render.Renderer;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,12 +23,12 @@ public class Main extends Game {
 
     public GameSession gameSession;
     public static String meId = "666";
-    public InputState inputState;
-    public MessageSender messageSender;
+    public static InputState inputState;
+    public static MessageSender messageSender;
 
     public Main(InputState inputState) {
 
-        this.inputState = inputState;
+        Main.inputState = inputState;
 
         this.gameSession = new GameSession(false);
     }
@@ -54,7 +56,7 @@ public class Main extends Game {
         screenHeight = Gdx.graphics.getHeight();
 //		this.waitingSc = new WaitingSc(this);
         renderer = new Renderer();
-        renderer.setScreen(new PlayScreen());
+        renderer.setHomeScreen(new HomeSc(this));
 //        setScreen(new WaitingSc(this));
     }
 

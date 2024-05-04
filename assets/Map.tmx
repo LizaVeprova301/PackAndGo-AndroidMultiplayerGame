@@ -33,10 +33,10 @@
    eJztl0lOw0AQRStKAiwY9sACRUoOQhg2EO7AeBBYAScBEiTGezDeBVjwLWzRarpdXbJD3FY96UnVrXT5x3JiFZFSBT6miD7hV6q59tWuPbtXwnaHaNAJy3HTJLqFd/AePsDHJn/udJroDJ6nmmtf7dqzeyUMkX0UmH+1RdSHa3AdbsDNFn9ucYZoCS6nmmtf7dqze211cf/hAO50+RxPyPoMX+ArfIPvAfkvcK1LeJVqrn21a+9PL2QewhG8Dsi/2ybag/vwAB7CozZ/LuO48avks+YZs57tEc3BebjQc/c5afyY19d1naoQe34J0vyxf2/NX16GImf/K3/Zv9lJ58/2yuw3Tur2f6koCo90rgqpJdcs2ls6V4XUHNJ+eb2lc1VIzSHtl9dbOleF1BzSfnm9sxnCnCPstU3Z70lfj1jewUXmLu5ejxtulq57/qoQS9b+yqQTKDGTPD8hVpXY8ytxEfvzFHt+RVEURakT3zUj56E=
   </data>
  </layer>
- <objectgroup id="3" name="lightObject" visible="0">
+ <objectgroup id="3" name="lightObject">
   <object id="102" type="flowers" gid="11721" x="337.995" y="544.009" width="32" height="32"/>
   <object id="103" type="flowers" gid="11721" x="254.468" y="543.015" width="32" height="32"/>
-  <object id="110" name="tabouret" type="tabouret" gid="11567" x="600" y="228" width="32" height="32"/>
+  <object id="110" name="tabouret" type="tabouret" gid="11567" x="469.333" y="745.333" width="32" height="32"/>
  </objectgroup>
  <objectgroup id="6" name="hero">
   <object id="111" name="hero" gid="11991" x="444.667" y="721.333" width="16" height="16"/>

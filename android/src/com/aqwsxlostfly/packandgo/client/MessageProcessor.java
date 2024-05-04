@@ -61,10 +61,13 @@ public class MessageProcessor {
                     main.evict(idToEvict);
                     break;
                 case "player":
+
                     String id = object.getString("id");
                     float x = object.getFloat("x");
                     float y = object.getFloat("y");
-                    main.renderer.getCurrentScreen().updatePlayerArray(id, x, y);
+                    Gdx.app.log("CASE PLAYER MSGPROC", "id " + id + " x " +x  + " y " + y );
+
+                    main.renderer.getGameScreen().updatePlayerArray(id, x, y);
                     break;
                 default:
                     throw new RuntimeException("Unknown message type " + type);

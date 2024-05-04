@@ -200,6 +200,10 @@ public class Player extends Heroes {
 
     }
 
+    public void testUpdate(float newX, float newY){
+        body.setTransform(new Vector2(newX, newY), body.getLinearVelocity().x*10f + body.getLinearVelocity().y*10f);
+    }
+
     public void setAngle(float angle){
         body.setTransform(getX(), getY(), angle);
     }

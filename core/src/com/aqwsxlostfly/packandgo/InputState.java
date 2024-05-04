@@ -6,8 +6,8 @@ public interface InputState {
     void setType(String type);
     String getType();
 
-    void setScore(int score);
-    int getScore();
+    void setId(String id);
+    String getId();
 
     void setX(float x);
     float getX();

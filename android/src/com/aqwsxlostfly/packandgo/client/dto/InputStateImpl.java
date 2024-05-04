@@ -6,13 +6,15 @@ import com.aqwsxlostfly.packandgo.InputState;
 public class InputStateImpl implements InputState {
 
     private String type;
+
+    private String id;
     private float x;
     private float y;
-    private int score;
 
     public InputStateImpl() {
 
     }
+
 
     @Override
     public void setType(String type) {
@@ -24,16 +26,16 @@ public class InputStateImpl implements InputState {
         return this.type;
     }
 
-
     @Override
-    public void setScore(int score) {
-        this.score = score;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
-    public int getScore() {
-        return this.score;
+    public String getId() {
+        return this.id;
     }
+
 
     @Override
     public void setX(float x) {
