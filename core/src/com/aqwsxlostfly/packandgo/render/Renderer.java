@@ -32,7 +32,7 @@ public class Renderer {
         FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = 13;
         parameter.color = new Color(Color.RED);
-        font = generator.generateFont(parameter); // Здесь шрифт создаётся и может быть использован повторно
+        font = generator.generateFont(parameter);
         generator.dispose();
 
 
@@ -61,35 +61,13 @@ public class Renderer {
             batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
             batch.begin();
 
-//        SpriteBatch spriteBatch = new SpriteBatch();
-//            spriteBatch.begin();
-
-//        spriteBatch.end();
             gameScreen.render(batch, camera);
-
-//        batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
-
 
             batch.end();
         }
 
 
-//        Gdx.gl.glClearColor(0, 0, 0, 1);
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-//        batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
-//        batch.begin();
-
-//        SpriteBatch spriteBatch = new SpriteBatch();
-//        spriteBatch.begin();
-
-//        spriteBatch.end();
-//        homeScreen.render(batch, camera);
-
-//        batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
-
-
-//        batch.end();
     }
 
     public void setHomeScreen(HomeSc screen) {

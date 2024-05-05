@@ -41,9 +41,6 @@ public class HomeSc implements Screen {
     Stage stage;
     Skin skin;
 
-    private BitmapFont font;
-    private String currentCheckpointLetter = "";
-
     Texture backgroundTexture;
     Label gameNameLabel;
     TextButton createRoomBtn;
@@ -100,11 +97,17 @@ public class HomeSc implements Screen {
     private Texture getRandomTexture() {
         int rand = MathUtils.random(0, 4);
         switch (rand) {
-            case 0: return chairTexture;
-            case 1: return bathTexture;
-            case 2: return wardrobeTexture;
-            case 3: return tableTexture;
-            case 4: default: return lampTexture;
+            case 0:
+                return chairTexture;
+            case 1:
+                return bathTexture;
+            case 2:
+                return wardrobeTexture;
+            case 3:
+                return tableTexture;
+            case 4:
+            default:
+                return lampTexture;
         }
     }
 
@@ -266,59 +269,24 @@ public class HomeSc implements Screen {
         if (isCreating) {
             Gdx.app.log("CREATE ROOM", "Creating a room with ID: " + roomId + " and password: " + password);
             SessionState sessionState = new SessionStateToSend("createRoom", roomId, password);
-            setGameScreen(new PlayScreen());
-            main.messageSender.sendMessage(sessionState);
+            try {
+                main.messageSender.sendMessage(sessionState);
+                setGameScreen(new PlayScreen());
+            } catch (Exception e) {
+                Gdx.app.log("ERROR CREATE", "createState " + main.gameSession.getSessionMsg());
+            }
         } else {
             Gdx.app.log("JOIN ROOM", "Joining a room with ID: " + roomId + " and password: " + password);
             SessionState sessionState = new SessionStateToSend("joinRoom", roomId, password);
-            setGameScreen(new PlayScreen());
-            main.messageSender.sendMessage(sessionState);
+            try {
+                main.messageSender.sendMessage(sessionState);
+                setGameScreen(new PlayScreen());
+            } catch (Exception e) {
+                Gdx.app.log("ERROR JOIN", "joinState " + main.gameSession.getSessionMsg());
+            }
         }
     }
 
-//    @Override
-//    public void render(float delta) {
-//        Gdx.gl.glClearColor(0, 0, 0, 1);
-//        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//
-//        Main.batch.begin();
-//        Main.batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//        Main.batch.end();
-//
-//        showState();
-//
-//        stage.act(Math.min(delta, 1 / 30f));
-//        stage.draw();
-//    }
-
-    public void showState(){
-        Gdx.app.log("SESSION_STATE", main.gameSession.getId() + "   " + main.gameSession.getPassword() + "   " +
-                main.gameSession.getSessionMsg() +"   " + main.gameSession.getConnected() );
-    }
-
-//    @Override
-//    public void show() {
-//    }
-//
-//    @Override
-//    public void resize(int width, int height) {
-//        stage.getViewport().update(width, height, true);
-//    }
-//
-//    @Override
-//    public void pause() {
-//
-//    }
-
-//    @Override
-//    public void resume() {
-//
-//    }
-//
-//    @Override
-//    public void hide() {
-//
-//    }
 
     @Override
     public void render(SpriteBatch batch, OrthographicCamera camera) {
@@ -330,7 +298,7 @@ public class HomeSc implements Screen {
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-        showState();
+//        showState();
 
         stage.act(Math.min(1 / 30F, 1 / 30f));
         stage.draw();
