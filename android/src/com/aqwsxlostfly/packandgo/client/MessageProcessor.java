@@ -16,7 +16,7 @@ public class MessageProcessor {
 
     public void processEvent(WsEvent event) {
         String data = event.getData();
-//        Gdx.app.log("PROCESSED EVENT", data);
+
         if (data != null) {
 
             JsonReader jsonReader = new JsonReader();

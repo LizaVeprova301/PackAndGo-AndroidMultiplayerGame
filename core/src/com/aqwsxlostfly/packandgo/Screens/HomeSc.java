@@ -270,17 +270,25 @@ public class HomeSc implements Screen {
             Gdx.app.log("CREATE ROOM", "Creating a room with ID: " + roomId + " and password: " + password);
             SessionState sessionState = new SessionStateToSend("createRoom", roomId, password);
             try {
-                main.messageSender.sendMessage(sessionState);
+                Main.messageSender.sendMessage(sessionState);
+
+                Gdx.app.log("CREATE ROOM", "Creating a room with ID: " + roomId + " and password: " + password +
+                        " response " + main.gameSession.getSessionMsg());
                 setGameScreen(new PlayScreen());
+
             } catch (Exception e) {
                 Gdx.app.log("ERROR CREATE", "createState " + main.gameSession.getSessionMsg());
             }
         } else {
-            Gdx.app.log("JOIN ROOM", "Joining a room with ID: " + roomId + " and password: " + password);
+            Gdx.app.log("JOIN ROOM", "Joining a room with ID: " + roomId + " and password: " + password );
             SessionState sessionState = new SessionStateToSend("joinRoom", roomId, password);
             try {
-                main.messageSender.sendMessage(sessionState);
+                Main.messageSender.sendMessage(sessionState);
+
+                Gdx.app.log("JOIN ROOM", "Creating a room with ID: " + roomId + " and password: " + password +
+                        " response " + main.gameSession.getSessionMsg());
                 setGameScreen(new PlayScreen());
+
             } catch (Exception e) {
                 Gdx.app.log("ERROR JOIN", "joinState " + main.gameSession.getSessionMsg());
             }
@@ -298,9 +306,7 @@ public class HomeSc implements Screen {
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-//        showState();
-
-        stage.act(Math.min(1 / 30F, 1 / 30f));
+        stage.act(Math.min(1 / 60F, 1 / 60f));
         stage.draw();
     }
 

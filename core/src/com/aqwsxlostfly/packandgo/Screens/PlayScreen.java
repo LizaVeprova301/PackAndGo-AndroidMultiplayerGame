@@ -18,24 +18,26 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Timer;
 
-import java.util.Iterator;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayScreen implements Screen {
 
     Joystick joy;
     private final TileMapHelper tileMapHelper;
 
-    private static final float frameRate = 1/60f;
+    private static final float frameRateRender = 1/60f;
+
+    private static final float frameRateTimer = 1/50f;
+
+    private final int mapWidth, mapHeight, tilePixelWidth, tilePixelHeight, mapPixelWidth, mapPixelHeight;
 
     public static ObjectMap<String, Player> players = new ObjectMap<>();
 
@@ -107,20 +109,36 @@ public class PlayScreen implements Screen {
             }
         });
 
+
+        MapProperties properties = tileMapHelper.tiledMap.getProperties();
+        mapWidth = properties.get("width", Integer.class);
+        mapHeight = properties.get("height", Integer.class);
+        tilePixelWidth = properties.get("tilewidth", Integer.class);
+        tilePixelHeight = properties.get("tileheight", Integer.class);
+        mapPixelWidth = mapWidth * tilePixelWidth;
+        mapPixelHeight = mapHeight * tilePixelHeight;
+
         loadHeroes();
     }
 
     public void updatePlayerArray(String id, float x_, float y_) {
 
-        if (players.get(id) == null) {
-            Gdx.app.log("ADD NEW PLAYER", "id " + id + " x " + x_ + " y " + y_ );
-
-            if (Objects.equals(id, meId)){
+        if (Objects.equals(id, meId)) {
+            if (players.get(id) == null) {
+                Gdx.app.log("ADD NEW PLAYER", "id " + id + " x " + x_ + " y " + y_);
                 players.put(id, tileMapHelper.getPlayer());
             }
-        } else if (!Objects.equals(id, meId)){
-            players.get(id).testUpdate(x_, y_);
+        } else {
+
+            if (players.get(id) != null) {
+                players.get(id).serverUpdate(x_, y_);
+            }else{
+                Gdx.app.log("ADD NEW PLAYER", "id " + id + " x " + x_ + " y " + y_);
+                players.put(id, tileMapHelper.getNewPlayer());
+            }
+
         }
+
     }
 
 
@@ -136,14 +154,13 @@ public class PlayScreen implements Screen {
 
         cameraUpdate(camera);
 
-        world.step(1/60f, 6, 2);
+        world.step(frameRateRender, 8, 3);
 
         orthogonalTiledMapRenderer.setView(camera); // Устанавливаем камеру для рендерера карты
         orthogonalTiledMapRenderer.render(); // Рендерим карту
 
-        Array<String> keys = new Array<>(players.keys().toArray());
-        for (String key : keys) {
-            players.get(key).draw(batch);
+        for (ObjectMap.Entry<String, Player> entry : players.entries()) {
+            entry.value.draw(batch);
         }
 
 
@@ -158,7 +175,6 @@ public class PlayScreen implements Screen {
 
     public void updatePlayers(){
         players.get(meId).setDirection(joy.getDir());
-        players.get(meId).update();
     }
 
 
@@ -181,19 +197,12 @@ public class PlayScreen implements Screen {
             public void run() {
                 handleTimer();
             }
-        }, 0, frameRate);
+        }, 0, frameRateTimer);
     }
 
-    private void cameraUpdate(OrthographicCamera camera) {
-        // Получаем размеры карты
-        MapProperties properties = tileMapHelper.tiledMap.getProperties();
-        int mapWidth = properties.get("width", Integer.class);
-        int mapHeight = properties.get("height", Integer.class);
-        int tilePixelWidth = properties.get("tilewidth", Integer.class);
-        int tilePixelHeight = properties.get("tileheight", Integer.class);
-        int mapPixelWidth = mapWidth * tilePixelWidth;
-        int mapPixelHeight = mapHeight * tilePixelHeight;
 
+
+    private void cameraUpdate(OrthographicCamera camera) {
         // Устанавливаем позицию камеры на игрока
         camera.position.set(players.get(meId).getBody().getPosition().x, players.get(meId).getBody().getPosition().y, 0);
 
@@ -218,7 +227,6 @@ public class PlayScreen implements Screen {
         if (!players.isEmpty()) {
             Player me = players.get(meId);
             InputState playerState = updateAndGetInputState(me);
-//            Gdx.app.log("SEND MESSAGE", "HANDLE TIMER, send state");
             messageSender.sendMessage(playerState);
         }
     }
@@ -230,6 +238,8 @@ public class PlayScreen implements Screen {
         inputState.setId(meId);
         inputState.setX(player.getX());
         inputState.setY(player.getY());
+//        inputState.setX(player.getBody().getLinearVelocity().x);
+//        inputState.setY(player.getBody().getLinearVelocity().y);
 
         return inputState;
     }

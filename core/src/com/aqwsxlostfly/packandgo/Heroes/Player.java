@@ -11,7 +11,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 
 public class Player extends Heroes {
 
-    private static final float VELOCITY_SCALE = 70.0f;
+    private static final float VELOCITY_SCALE = 80.0f;
 
     public Player(Body body, TextureMapObject textureMapObject) {
         super(body, textureMapObject);
@@ -23,19 +23,14 @@ public class Player extends Heroes {
     }
 
     private void updateVelocity() {
-        // Задаем линейную скорость в соответствии с направлением.
-        // Если есть стена, Box2D автоматически обработает коллизию и остановит движение в этом направлении.
         Vector2 newDir = new Vector2(direction.getX()*VELOCITY_SCALE, direction.getY()*VELOCITY_SCALE);
         body.setLinearVelocity(newDir);
     }
 
-    @Override
-    public void update() {
 
-    }
-
-    public void testUpdate(float newX, float newY){
-        body.setTransform(new Vector2(newX, newY), body.getLinearVelocity().x*10f + body.getLinearVelocity().y*10f);
+    public void serverUpdate(float newX, float newY){
+//        body.setLinearVelocity(new Vector2(newX, newY));
+        body.setTransform(new Vector2(newX, newY), 0);
     }
 
     public void setAngle(float angle){

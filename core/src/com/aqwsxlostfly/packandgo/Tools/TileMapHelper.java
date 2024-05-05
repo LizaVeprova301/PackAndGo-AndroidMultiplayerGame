@@ -1,6 +1,9 @@
 package com.aqwsxlostfly.packandgo.Tools;
 
 
+import static com.aqwsxlostfly.packandgo.Tools.BodyHelperService.CATEGORY_PLAYER;
+import static com.aqwsxlostfly.packandgo.Tools.BodyHelperService.CATEGORY_WALL;
+
 import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
@@ -24,11 +27,9 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectMap;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class TileMapHelper {
@@ -37,6 +38,8 @@ public class TileMapHelper {
     public static int worldHeight;
     public static int worldWigth;
     private Player player;
+
+    private TextureMapObject textureMapObject;
 
     public static World world;
 
@@ -50,7 +53,7 @@ public class TileMapHelper {
                 Fixture fixtureA = contact.getFixtureA();
                 Fixture fixtureB = contact.getFixtureB();
 
-                Gdx.app.log("Contact", "beginContact between " + fixtureA.getBody().getUserData() + " and " + fixtureB.getBody().getUserData());
+                Gdx.app.log("Contact", "beginContact between " + fixtureA.getBody().getType()+ " and " + fixtureB.getBody().getUserData());
             }
 
             @Override
@@ -67,9 +70,6 @@ public class TileMapHelper {
             }
         });
     }
-
-    public static ObjectMap<String, MapObject> walls = new ObjectMap<>();
-
 
     public OrthogonalTiledMapRenderer setupMap() {
         this.tiledMap = new TmxMapLoader().load("Map.tmx");
@@ -91,7 +91,6 @@ public class TileMapHelper {
                for(MapObject mapObject   : mapLayer.getObjects()){
 
                    if (mapObject.getName()!=null && Objects.equals(mapObject.getName(), "wall")) {
-                        walls.put( String.valueOf(mapObject.getProperties().get("id")), mapObject);
                         wallsObjs.add(mapObject);
                    }
                }
@@ -112,10 +111,10 @@ public class TileMapHelper {
         for (MapObject mapObject : mapObjects) {
 
             TextureMapObject textureMapObject = ((TextureMapObject) mapObject);
+            this.textureMapObject = textureMapObject;
             String textureMapObjectName = textureMapObject.getName();
 
             if (textureMapObjectName != null && textureMapObjectName.equals("hero")) {
-
 
 
                 Body body = BodyHelperService.createBody(textureMapObject,
@@ -140,6 +139,8 @@ public class TileMapHelper {
         fixtureDef.shape = shape;
         fixtureDef.density = 0; // Стены не имеют веса.
         fixtureDef.friction = 0.3f; // Небольшое трение.
+        fixtureDef.filter.categoryBits = CATEGORY_WALL; // Вместо CATEGORY_PLAYER для стен
+        fixtureDef.filter.maskBits = CATEGORY_PLAYER;
 
         for (MapObject mapObject : mapObjects) {
             // Получаем прямоугольник стены из объекта карты.
@@ -188,7 +189,9 @@ public class TileMapHelper {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 0; // Стены не имеют веса.
-        fixtureDef.friction = 0.5f;
+        fixtureDef.friction = 0.3f;
+        fixtureDef.filter.categoryBits = CATEGORY_WALL; // Вместо CATEGORY_PLAYER для стен
+        fixtureDef.filter.maskBits = CATEGORY_PLAYER;
         body.createFixture(fixtureDef);
 
         shape.dispose();
@@ -197,6 +200,22 @@ public class TileMapHelper {
     public Player getPlayer() {
 
         Gdx.app.log("ADD NEW PLAYER", "GET NEW PLAYER IN TILE MAP MEE");
+
+        return player;
+    }
+
+    public Player getNewPlayer() {
+
+        Gdx.app.log("ADD NEW PLAYER", "GET NEW PLAYER IN TILE NEWWWWWWWWWWWW");
+
+        TextureMapObject textureMapObjectNew = new TextureMapObject(textureMapObject.getTextureRegion());
+
+        Body body = BodyHelperService.createBody(textureMapObjectNew,
+                world, false);
+
+        body.setTransform(textureMapObjectNew.getX(), textureMapObjectNew.getY(), 0);
+
+        player = new Player(body, textureMapObjectNew);
 
         return player;
     }

@@ -1,20 +1,12 @@
 package com.aqwsxlostfly.packandgo;
 
 
-
 import com.aqwsxlostfly.packandgo.Screens.HomeSc;
 import com.aqwsxlostfly.packandgo.Screens.PlayScreen;
-import com.aqwsxlostfly.packandgo.Tools.Point2D;
 import com.aqwsxlostfly.packandgo.render.Renderer;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ObjectMap;
-
-import java.util.Objects;
 
 
 public class Main extends Game {

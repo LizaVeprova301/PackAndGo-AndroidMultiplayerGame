@@ -1,7 +1,6 @@
 package com.aqwsxlostfly.packandgo.Tools;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.objects.TextureMapObject;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -11,6 +10,10 @@ import com.badlogic.gdx.physics.box2d.World;
 
 
 public class BodyHelperService {
+
+    public static final short CATEGORY_PLAYER = 0x0001;
+
+    public static final short CATEGORY_WALL = 0x0002;
 
     public static Body createBody(TextureMapObject textureObject, World world, boolean isStatic) {
         TextureRegion textureRegion = textureObject.getTextureRegion();
@@ -34,8 +37,10 @@ public class BodyHelperService {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.density = 1.0F;
+        fixtureDef.density = 0F;
         fixtureDef.friction = 0.3f;
+        fixtureDef.filter.categoryBits = CATEGORY_PLAYER;
+        fixtureDef.filter.maskBits = CATEGORY_WALL;
         body.createFixture(fixtureDef);
 
         shape.dispose();

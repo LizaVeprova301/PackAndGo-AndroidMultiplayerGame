@@ -19,7 +19,6 @@ public abstract class Heroes {
         this.textureRegion = textureMapObject.getTextureRegion();
     }
 
-    public abstract void update();
     public abstract void draw(SpriteBatch batch);
     public Body getBody() {
         return body;
