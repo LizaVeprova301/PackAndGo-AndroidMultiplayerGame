@@ -16,7 +16,7 @@ public class MessageProcessor {
 
     public void processEvent(WsEvent event) {
         String data = event.getData();
-        Gdx.app.log("PROCESSED EVENT", data);
+//        Gdx.app.log("PROCESSED EVENT", data);
         if (data != null) {
 
             JsonReader jsonReader = new JsonReader();
@@ -65,7 +65,6 @@ public class MessageProcessor {
                     String id = object.getString("id");
                     float x = object.getFloat("x");
                     float y = object.getFloat("y");
-                    Gdx.app.log("CASE PLAYER MSGPROC", "id " + id + " x " +x  + " y " + y );
 
                     main.renderer.getGameScreen().updatePlayerArray(id, x, y);
                     break;

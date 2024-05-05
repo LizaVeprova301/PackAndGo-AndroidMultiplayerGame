@@ -13,13 +13,22 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.ObjectMap;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class TileMapHelper {
@@ -28,14 +37,35 @@ public class TileMapHelper {
     public static int worldHeight;
     public static int worldWigth;
     private Player player;
-    private Player tabouret;
 
-//    private Body body;
-//    private TextureMapObject textureMapObject;
-    private final World world;
+    public static World world;
 
     public TileMapHelper() {
-        this.world = new World(new Vector2(0, 0), false);
+
+        TileMapHelper.world = new World(new Vector2(0, 0), false);
+
+        TileMapHelper.world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                Fixture fixtureA = contact.getFixtureA();
+                Fixture fixtureB = contact.getFixtureB();
+
+                Gdx.app.log("Contact", "beginContact between " + fixtureA.getBody().getUserData() + " and " + fixtureB.getBody().getUserData());
+            }
+
+            @Override
+            public void endContact(Contact contact) {
+                // Обработка окончания контакта между двумя фикстурами.
+            }
+
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+            }
+
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+            }
+        });
     }
 
     public static ObjectMap<String, MapObject> walls = new ObjectMap<>();
@@ -44,8 +74,8 @@ public class TileMapHelper {
     public OrthogonalTiledMapRenderer setupMap() {
         this.tiledMap = new TmxMapLoader().load("Map.tmx");
         MapProperties properties = tiledMap.getProperties();
-        worldHeight = properties.get("height", Integer.class) * 16 - 16;
-        worldWigth = properties.get("width", Integer.class) * 16 - 16;
+        worldHeight = properties.get("height", Integer.class) * 16;
+        worldWigth = properties.get("width", Integer.class) * 16;
         parseMapObjects(tiledMap.getLayers().get("hero").getObjects());
 
 
@@ -56,14 +86,18 @@ public class TileMapHelper {
 //           Gdx.app.log("CHECK LAYER", "id " + mapLayer.getName());
            if (Objects.equals(mapLayer.getName(), "ground")){
 
-               for(MapObject mapObject   : mapLayer.getObjects()){
-                   Gdx.app.log("CHECK OBJECT COUNT CLASS", "id " + mapObject.getName());
-                   if (mapObject.getName()!=null && Objects.equals(mapObject.getName(), "wall")) {
-                      walls.put( String.valueOf(mapObject.getProperties().get("id")), mapObject);
+               MapObjects wallsObjs = new MapObjects();
 
-//                       Gdx.app.log("CHECK OBJECT", "getX " + mapObject.getProperties().get("x"));
+               for(MapObject mapObject   : mapLayer.getObjects()){
+
+                   if (mapObject.getName()!=null && Objects.equals(mapObject.getName(), "wall")) {
+                        walls.put( String.valueOf(mapObject.getProperties().get("id")), mapObject);
+                        wallsObjs.add(mapObject);
                    }
                }
+
+               createWalls(wallsObjs);
+               createMapBounds(worldWigth, worldHeight);
 
            }
         }
@@ -82,68 +116,91 @@ public class TileMapHelper {
 
             if (textureMapObjectName != null && textureMapObjectName.equals("hero")) {
 
+
+
                 Body body = BodyHelperService.createBody(textureMapObject,
                         world, false);
 
                 body.setTransform(textureMapObject.getX(), textureMapObject.getY(), 0);
 
-//                this.body =  body;
-//                this.textureMapObject = textureMapObject;
-
                 player = new Player(body, textureMapObject);
 
-                TextureMapObject textureMapObject_t = ((TextureMapObject) mapObject);
-
-                Body body_t = BodyHelperService.createBody(textureMapObject_t,
-                        world, false);
-
-                body_t.setTransform(textureMapObject_t.getX() + 1, textureMapObject_t.getY(), 0);
-
-                tabouret = new Player(body_t, textureMapObject_t);
-
-            } else if (textureMapObjectName != null && textureMapObjectName.equals("tabouret")) {
-
-                Body body_t = BodyHelperService.createBody(textureMapObject,
-                        world, false);
-
-                body_t.setTransform(textureMapObject.getX(), textureMapObject.getY(), 0);
-
-//                textureMapObject.setScaleX(1.5f);
-//                textureMapObject.setScaleY(0.5f);
-
-//                tabouret = new Player(body_t, textureMapObject);
 
             }
 
         }
     }
 
+
+    private void createWalls(MapObjects mapObjects) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        PolygonShape shape = new PolygonShape();
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0; // Стены не имеют веса.
+        fixtureDef.friction = 0.3f; // Небольшое трение.
+
+        for (MapObject mapObject : mapObjects) {
+            // Получаем прямоугольник стены из объекта карты.
+            RectangleMapObject rectangleObject = (RectangleMapObject) mapObject;
+            Rectangle rect = rectangleObject.getRectangle();
+
+            // Set body position to the center of the rectangle.
+            bodyDef.position.set(
+                    (rect.x + rect.width * 0.5f) ,
+                    (rect.y + rect.height * 0.5f)
+            );
+
+            // Create the body from the definition.
+            Body body = world.createBody(bodyDef);
+
+            // Set the shape as a box using the rectangle's dimensions.
+            shape.setAsBox(rect.width * 0.5f  , rect.height * 0.5f );
+
+            // Add the fixture to the body.
+            body.createFixture(fixtureDef);
+        }
+
+        // Clean up after ourselves. Calling dispose is important to avoid memory leaks!
+        shape.dispose();
+    }
+
+    private void createMapBounds(int mapWidth, int mapHeight) {
+        float halfWidth = mapWidth / 2.0f;
+        float halfHeight = mapHeight / 2.0f;
+        createWall(halfWidth, -1, mapWidth, 1); // Нижняя граница
+        createWall(halfWidth, mapHeight, mapWidth, 1); // Верхняя граница
+        createWall(-1, halfHeight, 1, mapHeight); // Левая граница
+        createWall(mapWidth, halfHeight, 1, mapHeight); // Правая граница
+    }
+
+    private void createWall(float x, float y, float width, float height) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(x , y );
+
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(width / 2 , height / 2 );
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0; // Стены не имеют веса.
+        fixtureDef.friction = 0.5f;
+        body.createFixture(fixtureDef);
+
+        shape.dispose();
+    }
+
     public Player getPlayer() {
 
         Gdx.app.log("ADD NEW PLAYER", "GET NEW PLAYER IN TILE MAP MEE");
 
-
-//        return new Player(this.body, this.textureMapObject);
-
         return player;
     }
 
-    public Player getOtherPlayer() {
-
-        Gdx.app.log("ADD NEW PLAYER", "GET NEW PLAYER IN TILE MAP TABOURET");
-
-
-//        return new Player(this.body, this.textureMapObject);
-
-        return tabouret;
-    }
-
-    private Shape createRectangleShape(RectangleMapObject rectangleMapObject) {
-        PolygonShape shape = new PolygonShape();
-        Vector2 size = new Vector2((rectangleMapObject.getRectangle().width / 2) / 32.0f, (rectangleMapObject.getRectangle().height / 2) / 32.0f);
-        shape.setAsBox(size.x, size.y, rectangleMapObject.getRectangle().getCenter(new Vector2()).scl(1 / 32.0f), 0.0f);
-        return shape;
-    }
 
 
 }

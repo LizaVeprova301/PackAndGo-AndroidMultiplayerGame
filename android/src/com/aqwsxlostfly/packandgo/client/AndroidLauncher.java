@@ -80,7 +80,7 @@ public class AndroidLauncher extends AndroidApplication {
         WebSocketListener webSocketListener = new WebSocketListener() {
             @Override
             public void onMessageReceived(String message) {
-                Gdx.app.log("MESSAGE RECEIVED", "MESSAGE: " + message);
+//                Gdx.app.log("MESSAGE RECEIVED", "MESSAGE: " + message);
                 WsEvent wsEvent = new WsEvent();
                 wsEvent.setData(message);
                 callback.onEvent(wsEvent);

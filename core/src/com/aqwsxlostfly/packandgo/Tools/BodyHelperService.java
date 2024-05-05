@@ -1,6 +1,7 @@
 package com.aqwsxlostfly.packandgo.Tools;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.objects.TextureMapObject;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -17,25 +18,28 @@ public class BodyHelperService {
         float width = textureRegion.getRegionWidth();
         float height = textureRegion.getRegionHeight();
 
-        float x = textureObject.getX() + width / 2;
+        float x = textureObject.getX() + width /2 ;
         float y = textureObject.getY() + height / 2;
 
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = isStatic ? BodyDef.BodyType.StaticBody : BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(x / 32.0f, y / 32.0f);
-        bodyDef.angularVelocity = 4f;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x / 16.0f, y / 16.0f);
+        bodyDef.angularVelocity = 0f;
         bodyDef.fixedRotation = true;
 
         Body body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(width / 2 / 32.0f, height / 2 / 32.0f);
+        shape.setAsBox(width / 2 , height / 2 );
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
+        fixtureDef.density = 1.0F;
+        fixtureDef.friction = 0.3f;
         body.createFixture(fixtureDef);
 
         shape.dispose();
+
 
         return body;
     }

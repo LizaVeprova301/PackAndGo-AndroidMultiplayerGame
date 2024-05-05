@@ -5,6 +5,7 @@ import static com.aqwsxlostfly.packandgo.Main.meId;
 import static com.aqwsxlostfly.packandgo.Main.messageSender;
 import static com.aqwsxlostfly.packandgo.Main.screenHeight;
 import static com.aqwsxlostfly.packandgo.Main.screenWidth;
+import static com.aqwsxlostfly.packandgo.Tools.TileMapHelper.world;
 
 import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.aqwsxlostfly.packandgo.InputState;
@@ -20,6 +21,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Timer;
@@ -35,16 +37,11 @@ public class PlayScreen implements Screen {
 
     private static final float frameRate = 1/60f;
 
-//    public final Player player;
-    private Player line;
     public static ObjectMap<String, Player> players = new ObjectMap<>();
 
     private final OrthogonalTiledMapRenderer orthogonalTiledMapRenderer;
     private final OrthographicCamera hudCamera;
-
-
-
-    public static int count;
+    private Box2DDebugRenderer box2DDebugRenderer = new Box2DDebugRenderer();
 
 
     public PlayScreen() {
@@ -58,10 +55,6 @@ public class PlayScreen implements Screen {
         orthogonalTiledMapRenderer = tileMapHelper.setupMap();
 
         updatePlayerArray(meId, 0,0);
-
-//        this.player = tileMapHelper.getPlayer();
-
-//        this.line = tileMapHelper.getLine();
 
         Gdx.input.setInputProcessor(new InputProcessor() {
             @Override
@@ -119,34 +112,17 @@ public class PlayScreen implements Screen {
 
     public void updatePlayerArray(String id, float x_, float y_) {
 
-        Gdx.app.log("updatePlayerArray", "id " + id + " x " + x_ + " y " + y_ );
-
-//        Player player = players.get(id);
         if (players.get(id) == null) {
             Gdx.app.log("ADD NEW PLAYER", "id " + id + " x " + x_ + " y " + y_ );
-//            Main.players.put(id, new Player(Main.capibara, new Point2D(Main.screenWidth / 2, Main.screenHeight / 2), 10F, (float) (Main.screenHeight / 5), 5));
+
             if (Objects.equals(id, meId)){
                 players.put(id, tileMapHelper.getPlayer());
-            }else{
-                players.put(id, tileMapHelper.getOtherPlayer());
             }
         } else if (!Objects.equals(id, meId)){
-            Gdx.app.log("UPDATE GAME STATE ARRAY", "NEW MSG SERVER STATE" + "new x " + x_ + " new y " + y_ );
-//            player.setDirection(new Point2D(x_, y_));
-//            player.setScoreValue(score);
-//            player.setHealth(health);
-//            player.setGhost(ghost);
             players.get(id).testUpdate(x_, y_);
         }
     }
 
-
-
-
-
-//    public Player getPlayer(){
-//        return player;
-//    }
 
     public void multitouch(float x, float y, boolean isDownTouch, int pointer) {
         for (int i = 0; i < 3; i++) {
@@ -154,20 +130,16 @@ public class PlayScreen implements Screen {
         }
     }
 
-    private int isActive = 0;
-
     public void render(SpriteBatch batch, OrthographicCamera camera) {
 
         updatePlayers();
 
         cameraUpdate(camera);
 
+        world.step(1/60f, 6, 2);
+
         orthogonalTiledMapRenderer.setView(camera); // Устанавливаем камеру для рендерера карты
         orthogonalTiledMapRenderer.render(); // Рендерим карту
-
-//        for (String key : players.keys()) {
-//            players.get(key).draw(batch);
-//        }
 
         Array<String> keys = new Array<>(players.keys().toArray());
         for (String key : keys) {
@@ -179,6 +151,9 @@ public class PlayScreen implements Screen {
         batch.setProjectionMatrix(hudCamera.combined);
 
         joy.draw(batch); // Рисуем джойстик с использованием камеры HUD
+
+        box2DDebugRenderer.render(world,camera.combined.scl(1));
+
     }
 
     public void updatePlayers(){
@@ -243,7 +218,7 @@ public class PlayScreen implements Screen {
         if (!players.isEmpty()) {
             Player me = players.get(meId);
             InputState playerState = updateAndGetInputState(me);
-            Gdx.app.log("SEND MESSAGE", "HANDLE TIMER, send state");
+//            Gdx.app.log("SEND MESSAGE", "HANDLE TIMER, send state");
             messageSender.sendMessage(playerState);
         }
     }

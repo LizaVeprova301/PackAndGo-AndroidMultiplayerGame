@@ -47,17 +47,11 @@ public class Main extends Game {
     @Override
     public void create() {
 
-
-//        batch = new SpriteBatch();
-//        img = new Texture("packlogo.png");
-//        circle = new Texture("circle.png");
-
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
-//		this.waitingSc = new WaitingSc(this);
+
         renderer = new Renderer();
         renderer.setHomeScreen(new HomeSc(this));
-//        setScreen(new WaitingSc(this));
     }
 
     @Override
@@ -70,10 +64,6 @@ public class Main extends Game {
     public void evict(String idToEvict) {
         PlayScreen.players.remove(idToEvict);
     }
-
-//	public void handleTimer() {
-//		this.waitingSc.handleTimer();
-//	}
 
 
     @Override

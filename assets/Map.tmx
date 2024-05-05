@@ -41,7 +41,7 @@
  <objectgroup id="6" name="hero">
   <object id="111" name="hero" gid="11991" x="444.667" y="721.333" width="16" height="16"/>
  </objectgroup>
- <objectgroup id="5" name="ground" visible="0">
+ <objectgroup id="5" name="ground">
   <object id="34" type="floor" x="31.3333" y="92.6667" width="287.333" height="211.333"/>
   <object id="35" type="floor" x="336.667" y="94.6667" width="142.667" height="208.667"/>
   <object id="36" type="floor" x="496.667" y="95.3333" width="238.667" height="207.333"/>
@@ -74,8 +74,8 @@
   <object id="135" name="wall" type="wall" x="0" y="655" width="321" height="52"/>
   <object id="136" name="wall" type="wall" x="320" y="653" width="15" height="115"/>
   <object id="137" name="wall" type="wall" x="321" y="751" width="271" height="16"/>
-  <object id="139" name="wall" type="wall" x="577" y="656" width="19" height="114"/>
+  <object id="139" name="wall" type="wall" x="575.5" y="656" width="20.5" height="114"/>
   <object id="140" name="wall" type="wall" x="383" y="32" width="67" height="82"/>
  </objectgroup>
- <objectgroup id="4" name="heavyObjects" visible="0"/>
+ <objectgroup id="4" name="heavyObjects"/>
 </map>
