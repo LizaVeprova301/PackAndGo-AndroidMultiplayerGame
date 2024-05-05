@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ForkJoinPool;
+
+import static com.aqwsxlostfly.packandgo.packandgo.GameLoop.threadPool;
 
 
 @Slf4j
@@ -28,7 +29,7 @@ public class GameSessionManager {
 
     private final ObjectMap<String, GameSession> activeGameSessions = new ObjectMap<>();
 
-    private final ForkJoinPool pool = ForkJoinPool.commonPool();
+//    private final ForkJoinPool pool = ForkJoinPool.commonPool();
 
     private final Json json;
 
@@ -43,7 +44,7 @@ public class GameSessionManager {
 
     public void updateGameSession(String userId, JsonNode state) {
         String sessionId = getSessionIdByUserId(userId);
-        Gdx.app.log("updateGameSession", "userId " + userId + " sessionId " + sessionId + " state " + state);
+//        Gdx.app.log("updateGameSession", "userId " + userId + " sessionId " + sessionId + " state " + state);
 
 
         if (activeGameSessions.containsKey(sessionId)) {
@@ -55,10 +56,17 @@ public class GameSessionManager {
         }
     }
 
-    public void joinGameSession(String userId, String sessionId, String sessionPassword) {
+    public void joinGameSession(String userId, String sessionId, String sessionPassword, StandardWebSocketSession session) {
         if (!activeGameSessions.containsKey(sessionId)) {
             Gdx.app.log("JOIN SESSION", "ERROR JOINING SESSION - SESSION "
                     + sessionId + " DOES NOT EXISTS");
+            Array<GameSessionToSend> stateToSend = new Array<>();
+            GameSessionToSend gameSessionToSend = new GameSessionToSend(sessionId, sessionPassword, "does_not_exists");
+            stateToSend.add(gameSessionToSend);
+
+            String stateJson = json.toJson(stateToSend);
+
+            sendMessage(stateJson, session);
             return;
         }
         if (!userToSession.containsKey(userId)) {
@@ -72,6 +80,13 @@ public class GameSessionManager {
                 // TODO
                 Gdx.app.log("JOIN SESSION", "ERROR JOINING SESSION - USER "
                         + userId + " INCORRECT PASSWORD " + sessionPassword);
+                Array<GameSessionToSend> stateToSend = new Array<>();
+                GameSessionToSend gameSessionToSend = new GameSessionToSend(sessionId, sessionPassword, "incorrect_password");
+                stateToSend.add(gameSessionToSend);
+
+                String stateJson = json.toJson(stateToSend);
+
+                sendMessage(stateJson, session);
             }
         } else {
             // TODO
@@ -112,7 +127,7 @@ public class GameSessionManager {
     }
 
     private void sendMessage(String json, StandardWebSocketSession session) {
-        pool.execute(() -> {
+        threadPool.execute(() -> {
             try {
                 if (session.isOpen()) {
                     session.getNativeSession().getBasicRemote().sendText(json);

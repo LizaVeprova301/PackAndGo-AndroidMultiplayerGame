@@ -17,7 +17,7 @@ public class MessageDispatcher {
     private GameSessionManager gameSessionManager;
 
     public void processMessage(StandardWebSocketSession session, JsonNode message) {
-        Gdx.app.log("PROCESS MESSAGE", "Message into processMsg " + message);
+//        Gdx.app.log("PROCESS MESSAGE", "Message into processMsg " + message);
         String userId = session.getId();
         String type = message.get("type").asText();
         switch (type) {
@@ -36,7 +36,7 @@ public class MessageDispatcher {
                 String sessionJoinPassword = message.get("sessionPassword").asText();
                 Gdx.app.log("JOIN SESSION processMessage", "sessionJoinId " + sessionJoinId + " sesPsw" + sessionJoinPassword );
 
-                gameSessionManager.joinGameSession(userId, sessionJoinId, sessionJoinPassword);
+                gameSessionManager.joinGameSession(userId, sessionJoinId, sessionJoinPassword, session);
 
                 Gdx.app.log("JOIN ROOM", "sesID " + sessionJoinId + " sesPass "+ sessionJoinPassword +
                         "  playersSizez " + gameSessionManager.getActiveGameSessions().get(sessionJoinId).getGameState().getPlayersObjectMap().size);

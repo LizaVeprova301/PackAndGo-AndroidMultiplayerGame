@@ -46,9 +46,9 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
-        Gdx.app.log(MESSAGE_TAG, " NEW MESSAGE: " + message.getPayload() + "\n\n" + " sessionID " + session.getId()
-                + " headers " + session.getHandshakeHeaders() + " protocols " + session.getAcceptedProtocol()
-                + " sizeTextLimit " + session.getTextMessageSizeLimit() + " clientIP " + session.getRemoteAddress());
+//        Gdx.app.log(MESSAGE_TAG, " NEW MESSAGE: " + message.getPayload() + "\n\n" + " sessionID " + session.getId()
+//                + " headers " + session.getHandshakeHeaders() + " protocols " + session.getAcceptedProtocol()
+//                + " sizeTextLimit " + session.getTextMessageSizeLimit() + " clientIP " + session.getRemoteAddress());
 
         StandardWebSocketSession standardWebSocketSession = (StandardWebSocketSession) session;
 

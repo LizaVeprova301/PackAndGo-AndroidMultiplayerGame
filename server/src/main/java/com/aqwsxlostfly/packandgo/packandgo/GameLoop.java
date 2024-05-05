@@ -18,7 +18,10 @@ import org.springframework.web.socket.adapter.standard.StandardWebSocketSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -26,9 +29,14 @@ public class GameLoop extends ApplicationAdapter {
     private final MyWebSocketHandler socketHandler;
     private final Json json;
 
-    private static final float frameRate = 1/60f;
+    private static final float frameRate = 1/50f;
     private float lastRender = 0;
-    private final ForkJoinPool pool = ForkJoinPool.commonPool();
+
+    public static final ExecutorService threadPool =
+            Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() - 2);
+
+    private static final String SESSION_KEY_MESSAGE = "{\"class\":\"sessionKey\",\"id\":\"%s\"}";
+    private static final String EVICT_MESSAGE = "{\"class\":\"evict\",\"id\":\"%s\"}";
 
     @Autowired
     private GameSessionManager gameSessionManager;
@@ -44,19 +52,19 @@ public class GameLoop extends ApplicationAdapter {
     @Override
     public void create() {
         socketHandler.setConnectListener(session -> {
-            sendMessage(String.format("{\"class\":\"sessionKey\",\"id\":\"%s\"}", session.getId()), session);
+            sendMessage(String.format(SESSION_KEY_MESSAGE, session.getId()), session);
         });
         socketHandler.setDisconnectListener(session -> {
 
             sendToEverybodyInSession(
-                    String.format("{\"class\":\"evict\",\"id\":\"%s\"}", session.getId()),
+                    String.format(EVICT_MESSAGE, session.getId()),
                     gameSessionManager.getAllUsersInSessionByUserId(session.getId())
             );
 
             gameSessionManager.disconnectGameSession(session.getId());
         });
         socketHandler.setMessageListener(((session, message) -> {
-            pool.execute(() -> {
+            threadPool.execute(() -> {
                 messageDispatcher.processMessage(session, message);
             });
         }));
@@ -74,20 +82,8 @@ public class GameLoop extends ApplicationAdapter {
 
             for (ObjectMap.Entry<String, GameSession> gameSessionEntry : sessionsCopy.entries()) {
                 GameSession gameSession = gameSessionEntry.value;
-                pool.execute(() -> {
-                    Array<Player> stateToSend = new Array<>();
-                    for (ObjectMap.Entry<String, Player> playerEntry : gameSession.getGameState().getPlayersObjectMap()) {
-                        Player player = playerEntry.value;
-                        player.setId(player.getId());
-                        player.setY(player.getY());
-                        player.setX(player.getX());
-                        stateToSend.add(player);
-                    }
-
-                    String stateJson = json.toJson(stateToSend);
-                    ArrayList<String> usersInSession = new ArrayList<>(gameSession.getActiveUserSessions().keySet());
-                    sendToEverybodyInSession(stateJson, usersInSession);
-//                    sendToEverybody(stateJson);
+                threadPool.execute(() -> {
+                    processGameSession(gameSession);
                 });
             }
 
@@ -95,8 +91,23 @@ public class GameLoop extends ApplicationAdapter {
         }
     }
 
+
+    private void processGameSession(GameSession gameSession) {
+        Array<Player> stateToSend = new Array<>();
+        for (Player player : gameSession.getGameState().getPlayersObjectMap().values()) {
+            player.setId(player.getId());
+            player.setY(player.getY());
+            player.setX(player.getX());
+            stateToSend.add(player);
+        }
+
+        String stateJson = json.toJson(stateToSend);
+        ArrayList<String> usersInSession = new ArrayList<>(gameSession.getActiveUserSessions().keySet());
+        sendToEverybodyInSession(stateJson, usersInSession);
+    }
+
     private void sendToEverybody(String json) {
-        pool.execute(() -> {
+        threadPool.execute(() -> {
             Array<StandardWebSocketSession> sessionsCopy = new Array<>(socketHandler.getSessions());
             for (StandardWebSocketSession session : sessionsCopy) {
                 try {
@@ -111,7 +122,7 @@ public class GameLoop extends ApplicationAdapter {
     }
 
     private void sendMessage(String json, StandardWebSocketSession session) {
-        pool.execute(() -> {
+        threadPool.execute(() -> {
             try {
                 if (session.isOpen()) {
                     session.getNativeSession().getBasicRemote().sendText(json);
@@ -124,7 +135,7 @@ public class GameLoop extends ApplicationAdapter {
     }
 
     private void sendToEverybodyInSession(String json, ArrayList<String> sessionIdsToSend) {
-        pool.execute(() -> {
+        threadPool.execute(() -> {
             Array<StandardWebSocketSession> sessionsCopy = new Array<>(socketHandler.getSessions());
             for (StandardWebSocketSession session : sessionsCopy) {
                 try {
@@ -150,6 +161,17 @@ public class GameLoop extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        threadPool.shutdown();
+        try {
+            if (!threadPool.awaitTermination(60, TimeUnit.SECONDS)) {
+                threadPool.shutdownNow();
+                if (!threadPool.awaitTermination(60, TimeUnit.SECONDS))
+                    log.error("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            threadPool.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
         super.dispose();
     }
 }
