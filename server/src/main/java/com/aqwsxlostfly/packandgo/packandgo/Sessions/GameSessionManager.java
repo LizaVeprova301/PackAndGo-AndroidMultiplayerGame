@@ -76,6 +76,13 @@ public class GameSessionManager {
                 Gdx.app.log("JOIN SESSION AFTER PSW", "userId " + userId );
                 userToSession.put(userId, sessionId);
                 activeGameSessions.get(sessionId).addUserSession(userId);
+                Array<GameSessionToSend> stateToSend = new Array<>();
+                GameSessionToSend gameSessionToSend = new GameSessionToSend(sessionId, sessionPassword, "connected_ok");
+                stateToSend.add(gameSessionToSend);
+
+                String stateJson = json.toJson(stateToSend);
+
+                sendMessage(stateJson, session);
             } else {
                 // TODO
                 Gdx.app.log("JOIN SESSION", "ERROR JOINING SESSION - USER "
@@ -96,7 +103,7 @@ public class GameSessionManager {
 
 
     public void createGameSession(String userId, String sessionId, String sessionPassword, Integer userLimit, StandardWebSocketSession session) {
-        if (!userToSession.containsKey(userId)) {
+        if (!userToSession.containsKey(userId) && !activeGameSessions.containsKey(sessionId)) {
             GameState gameState = new GameState();
             GameSession gameSession = new GameSession(sessionId, sessionPassword, userLimit, gameState);
             gameSession.addUserSession(userId);

@@ -48,9 +48,11 @@ public class MessageProcessor {
                     main.setMeId(meId);
                     break;
                 case "sessionRoom":
+
                     String sessionId = object.getString("id");
                     String sessionPassword = object.getString("password");
                     String sessionMsg = object.getString("msg");
+                    Gdx.app.log("SESSION STATE", "MSG " + sessionMsg);
                     main.gameSession.setConnected(true);
                     main.gameSession.setId(sessionId);
                     main.gameSession.setPassword(sessionPassword);

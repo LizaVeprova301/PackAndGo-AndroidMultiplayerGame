@@ -3,7 +3,6 @@ package com.aqwsxlostfly.packandgo.Screens;
 
 import static com.aqwsxlostfly.packandgo.render.Renderer.setGameScreen;
 
-
 import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.aqwsxlostfly.packandgo.Main;
 import com.aqwsxlostfly.packandgo.SessionState;
@@ -15,7 +14,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -30,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
@@ -265,33 +264,91 @@ public class HomeSc implements Screen {
 
     }
 
+
+    private static final String CONNECTING = "CONNECTING";
+    private static final String CONNECTING_TEXT = "CONNECTING...";
+    private static final String CONNECTION_ERROR = "Connection Error";
+    private static final String FAILED_TO_CONNECT = "Failed to connect to the server. Check your internet.";
+    private static final String CREATE_ROOM = "CREATE ROOM";
+    private static final String JOIN_ROOM = "JOIN ROOM";
+    private static final String SESSION_EXISTS = "Creation Error";
+    private static final String SESSION_EXIST_TEXT = "Session already exist.";
+    private static final String DOES_NOT_EXIST = "Joining Error";
+    private static final String DOES_NOT_EXIST_TEXT = "Session does not exist.";
+    private static final String INCORRECT_PASSWORD = "Joining Error";
+    private static final String INCORRECT_PASSWORD_TEXT = "Incorrect session password.";
+
     private void connectToServer(String password, String roomId, boolean isCreating) {
-        if (isCreating) {
-            Gdx.app.log("CREATE ROOM", "Creating a room with ID: " + roomId + " and password: " + password);
-            SessionState sessionState = new SessionStateToSend("createRoom", roomId, password);
-            try {
-                Main.messageSender.sendMessage(sessionState);
+        String action = isCreating ? "createRoom" : "joinRoom";
+        SessionState sessionState = new SessionStateToSend(action, roomId, password);
+        try {
+            Main.messageSender.sendMessage(sessionState);
+            startConnectionTimer(isCreating, roomId, password);
+        } catch (Exception e) {
+            showErrorDialog(CONNECTION_ERROR, FAILED_TO_CONNECT, 5);
+            Gdx.app.log(isCreating ? "ERROR CREATE" : "ERROR JOIN", action + "State " + main.gameSession.getSessionMsg());
+        }
+    }
 
-                Gdx.app.log("CREATE ROOM", "Creating a room with ID: " + roomId + " and password: " + password +
-                        " response " + main.gameSession.getSessionMsg());
-                setGameScreen(new PlayScreen());
+    private void startConnectionTimer(boolean isCreating, String roomId, String password) {
+        Timer timer = new Timer();
 
-            } catch (Exception e) {
-                Gdx.app.log("ERROR CREATE", "createState " + main.gameSession.getSessionMsg());
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                showErrorDialog(CONNECTING, CONNECTING_TEXT, 3);
             }
-        } else {
-            Gdx.app.log("JOIN ROOM", "Joining a room with ID: " + roomId + " and password: " + password );
-            SessionState sessionState = new SessionStateToSend("joinRoom", roomId, password);
-            try {
-                Main.messageSender.sendMessage(sessionState);
+        }, 0, 500);
 
-                Gdx.app.log("JOIN ROOM", "Creating a room with ID: " + roomId + " and password: " + password +
-                        " response " + main.gameSession.getSessionMsg());
-                setGameScreen(new PlayScreen());
-
-            } catch (Exception e) {
-                Gdx.app.log("ERROR JOIN", "joinState " + main.gameSession.getSessionMsg());
+        timer.scheduleTask(new Timer.Task() {
+            @Override
+            public void run() {
+                checkConnectionStatus(isCreating, roomId, password);
             }
+        }, 3, 500);
+    }
+
+    private void checkConnectionStatus(boolean isCreating, String roomId, String password) {
+        if (main.gameSession.getSessionMsg() != null) {
+            switch (main.gameSession.getSessionMsg()) {
+                case "connected_ok":
+                    Gdx.app.log(isCreating ? CREATE_ROOM : JOIN_ROOM, "Creating a room with ID: " + roomId + " and password: " + password +
+                            " response " + main.gameSession.getSessionMsg());
+                    setGameScreen(new PlayScreen());
+                    break;
+                case "session_exists":
+                    showErrorDialog(SESSION_EXISTS, SESSION_EXIST_TEXT, 5);
+                    break;
+                case "does_not_exist":
+                    showErrorDialog(DOES_NOT_EXIST, DOES_NOT_EXIST_TEXT, 5);
+                    break;
+                case "incorrect_password":
+                    showErrorDialog(INCORRECT_PASSWORD, INCORRECT_PASSWORD_TEXT, 5);
+                    break;
+            }
+        }
+    }
+
+    private void showErrorDialog(String title, String message, float autoCloseAfterSeconds) {
+        Dialog errorDialog = new Dialog(title, skin) {
+            @Override
+            protected void result(Object object) {
+                hide();
+            }
+        };
+
+        errorDialog.getTitleLabel().setFontScale(2.0f);
+        errorDialog.getTitleTable().padTop(40).padLeft(25).padBottom(30);
+
+        errorDialog.getContentTable().add(new Label(message, skin)).pad(40);
+        errorDialog.button("OK", true);
+        errorDialog.show(stage);
+
+        if (autoCloseAfterSeconds > 0) {
+            errorDialog.addAction(Actions.sequence(
+                    Actions.delay(autoCloseAfterSeconds),
+                    Actions.run(errorDialog::hide)
+            ));
         }
     }
 
@@ -306,7 +363,7 @@ public class HomeSc implements Screen {
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
 
-        stage.act(Math.min(1 / 60F, 1 / 60f));
+        stage.act(1 / 60f);
         stage.draw();
     }
 
