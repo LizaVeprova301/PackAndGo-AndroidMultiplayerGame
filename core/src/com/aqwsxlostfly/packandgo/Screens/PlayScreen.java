@@ -10,10 +10,13 @@ import static com.aqwsxlostfly.packandgo.Tools.TileMapHelper.world;
 import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.aqwsxlostfly.packandgo.InputState;
 import com.aqwsxlostfly.packandgo.Main;
+import com.aqwsxlostfly.packandgo.Tools.GameHud;
 import com.aqwsxlostfly.packandgo.Tools.Joystick;
 import com.aqwsxlostfly.packandgo.Tools.Point2D;
 import com.aqwsxlostfly.packandgo.Tools.TileMapHelper;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -33,6 +36,8 @@ public class PlayScreen implements Screen {
     Joystick joy;
     private final TileMapHelper tileMapHelper;
 
+    private static final float frameRate = 1/60f;
+    public GameHud gameHud;
     private static final float frameRateRender = 1/60f;
 
     private static final float frameRateTimer = 1/50f;
@@ -57,8 +62,11 @@ public class PlayScreen implements Screen {
         orthogonalTiledMapRenderer = tileMapHelper.setupMap();
 
         updatePlayerArray(meId, 0,0);
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        gameHud = new GameHud(players.get(meId)); // (или передайте player если он нужен для инициализации GameHud)
+        inputMultiplexer.addProcessor(gameHud.stage); // Первый обработчик, чтобы убедиться, что UI имеет приоритет
+        inputMultiplexer.addProcessor(new InputAdapter() { // Ваш текущий обработчик событий в PlayScreen
 
-        Gdx.input.setInputProcessor(new InputProcessor() {
             @Override
             public boolean keyDown(int keycode) {
                 return false;
@@ -108,6 +116,7 @@ public class PlayScreen implements Screen {
                 return false;
             }
         });
+        Gdx.input.setInputProcessor(inputMultiplexer);
 
 
         MapProperties properties = tileMapHelper.tiledMap.getProperties();
@@ -119,6 +128,8 @@ public class PlayScreen implements Screen {
         mapPixelHeight = mapHeight * tilePixelHeight;
 
         loadHeroes();
+
+
     }
 
     public void updatePlayerArray(String id, float x_, float y_) {
@@ -168,6 +179,8 @@ public class PlayScreen implements Screen {
         batch.setProjectionMatrix(hudCamera.combined);
 
         joy.draw(batch); // Рисуем джойстик с использованием камеры HUD
+        gameHud.update(frameRateRender);
+        gameHud.draw();
 
         box2DDebugRenderer.render(world,camera.combined.scl(1));
 
@@ -181,7 +194,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        gameHud.dispose();
     }
 
     public void loadHeroes() {
@@ -238,8 +251,6 @@ public class PlayScreen implements Screen {
         inputState.setId(meId);
         inputState.setX(player.getX());
         inputState.setY(player.getY());
-//        inputState.setX(player.getBody().getLinearVelocity().x);
-//        inputState.setY(player.getBody().getLinearVelocity().y);
 
         return inputState;
     }
