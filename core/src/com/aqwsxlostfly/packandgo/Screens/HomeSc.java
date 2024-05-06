@@ -273,10 +273,13 @@ public class HomeSc implements Screen {
     private static final String JOIN_ROOM = "JOIN ROOM";
     private static final String SESSION_EXISTS = "Creation Error";
     private static final String SESSION_EXIST_TEXT = "Session already exist.";
-    private static final String DOES_NOT_EXIST = "Joining Error";
     private static final String DOES_NOT_EXIST_TEXT = "Session does not exist.";
-    private static final String INCORRECT_PASSWORD = "Joining Error";
     private static final String INCORRECT_PASSWORD_TEXT = "Incorrect session password.";
+    private static final String JOIN_ERROR = "Joining Error";
+    private static final String MAX_PLAYERS_TEXT = "Room is full. Players limit exceeded.";
+
+    private static final String SOME_ERROR = "Error occured";
+    private static final String SOME_ERROR_TEXT = "Some error occured. Restart game.";
 
     private void connectToServer(String password, String roomId, boolean isCreating) {
         String action = isCreating ? "createRoom" : "joinRoom";
@@ -320,10 +323,16 @@ public class HomeSc implements Screen {
                     showErrorDialog(SESSION_EXISTS, SESSION_EXIST_TEXT, 5);
                     break;
                 case "does_not_exist":
-                    showErrorDialog(DOES_NOT_EXIST, DOES_NOT_EXIST_TEXT, 5);
+                    showErrorDialog(JOIN_ERROR, DOES_NOT_EXIST_TEXT, 5);
                     break;
                 case "incorrect_password":
-                    showErrorDialog(INCORRECT_PASSWORD, INCORRECT_PASSWORD_TEXT, 5);
+                    showErrorDialog(JOIN_ERROR, INCORRECT_PASSWORD_TEXT, 5);
+                    break;
+                case "players_limit":
+                    showErrorDialog(JOIN_ERROR, MAX_PLAYERS_TEXT, 5);
+                    break;
+                default:
+                    showErrorDialog(SOME_ERROR, SOME_ERROR_TEXT, 5);
                     break;
             }
         }

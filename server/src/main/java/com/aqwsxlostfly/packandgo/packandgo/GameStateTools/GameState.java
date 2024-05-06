@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 @Getter
 public class GameState {
 
-    // TODO
-    // Concurrent map
     private final ObjectMap<String, Player> playersObjectMap = new ObjectMap<>();
 
 //    TODO

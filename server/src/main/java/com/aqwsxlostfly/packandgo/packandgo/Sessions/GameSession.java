@@ -45,5 +45,8 @@ public class GameSession {
         this.gameState.updateState(state);
     }
 
+    public boolean canJoin() {
+        return gameState.getPLayersAmount() + 1 <= userLimit;
+    }
 }
 
