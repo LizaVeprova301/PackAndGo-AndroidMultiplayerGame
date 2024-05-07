@@ -15,7 +15,7 @@ public class BodyHelperService {
 
     public static final short CATEGORY_WALL = 0x0002;
 
-    public static Body createBody(TextureMapObject textureObject, World world, boolean isStatic) {
+    public static Body createBodyPlayer(TextureMapObject textureObject, World world, boolean isStatic) {
         TextureRegion textureRegion = textureObject.getTextureRegion();
 
         float width = textureRegion.getRegionWidth();
@@ -48,4 +48,7 @@ public class BodyHelperService {
 
         return body;
     }
+
+
+
 }

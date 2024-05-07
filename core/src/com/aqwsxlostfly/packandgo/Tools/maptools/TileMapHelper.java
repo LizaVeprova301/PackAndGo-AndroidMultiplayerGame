@@ -49,7 +49,7 @@ public class TileMapHelper {
                 Fixture fixtureA = contact.getFixtureA();
                 Fixture fixtureB = contact.getFixtureB();
 
-                Gdx.app.log("Contact", "beginContact between " + fixtureA.getBody().getType()+ " and " + fixtureB.getBody().getUserData());
+                Gdx.app.log("Contact", "beginContact between " + fixtureA.getBody().getType() + " and " + fixtureB.getBody().getUserData());
             }
 
             @Override
@@ -179,7 +179,7 @@ public class TileMapHelper {
 
         TextureMapObject textureMapObjectNew = new TextureMapObject(textureMapObjectPlayer.getTextureRegion());
 
-        Body body = BodyHelperService.createBody(textureMapObjectNew,
+        Body body = BodyHelperService.createBodyPlayer(textureMapObjectNew,
                 world, false);
 
         body.setTransform(textureMapObjectPlayer.getX(), textureMapObjectPlayer.getY(), 0);

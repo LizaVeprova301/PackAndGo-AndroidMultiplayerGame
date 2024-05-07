@@ -54,6 +54,8 @@ public class HomeSc implements Screen {
     Stage stage;
     Skin skin;
 
+    Timer timer = new Timer();
+
     Texture backgroundTexture;
     Label gameNameLabel;
     TextButton createRoomBtn;
@@ -63,6 +65,7 @@ public class HomeSc implements Screen {
     TextButton connectBtn;
     TextButton joinGameBtn;
     Dialog lobbyDialog;
+    Dialog errorDialog;
 
     private ArrayList<FlyingObject> flyingObjects;
     private Texture chairTexture, bathTexture, wardrobeTexture, tableTexture, lampTexture;
@@ -216,6 +219,7 @@ public class HomeSc implements Screen {
         joinGameBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("JOINCLICK", "CLICK");
                 connectToServer(setPasswordField.getText(), setIdField.getText(), false);
             }
         });
@@ -254,7 +258,7 @@ public class HomeSc implements Screen {
 
         lobbyDialog.button(actionButtonDialog, true);
 
-        actionButtonDialog.addListener(new ClickListener() { // Устанавливаем слушателя для кнопки в диалоге
+        actionButtonDialog.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 connectToServer(passwordFieldDialog.getText(), idFieldDialog.getText(), isCreating);
@@ -282,7 +286,6 @@ public class HomeSc implements Screen {
         String action = isCreating ? "createRoom" : "joinRoom";
         SessionState sessionState = new SessionStateToSend(action, roomId, password);
         try {
-            setGameScreen(new PlayScreen());
             Main.messageSender.sendMessage(sessionState);
             startConnectionTimer(isCreating, roomId, password);
         } catch (Exception e) {
@@ -292,52 +295,59 @@ public class HomeSc implements Screen {
     }
 
     private void startConnectionTimer(boolean isCreating, String roomId, String password) {
-        Timer timer = new Timer();
 
-        timer.scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                showErrorDialog(CONNECTING, CONNECTING_TEXT, 3);
-            }
-        }, 0, 500);
+        showErrorDialog(CONNECTING, CONNECTING_TEXT, 1);
 
         timer.scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 checkConnectionStatus(isCreating, roomId, password);
             }
-        }, 3, 500);
+        }, 1);
+
     }
 
     private void checkConnectionStatus(boolean isCreating, String roomId, String password) {
         if (main.gameSession.getSessionMsg() != null) {
+            resetButtons();
             switch (main.gameSession.getSessionMsg()) {
                 case "connected_ok":
                     Gdx.app.log(isCreating ? CREATE_ROOM : JOIN_ROOM, "Creating a room with ID: " + roomId + " and password: " + password +
                             " response " + main.gameSession.getSessionMsg());
+                    setGameScreen(new PlayScreen());
                     changeToPlayScreen();
                     break;
                 case "session_exists":
+                    resetSessionState();
                     showErrorDialog(SESSION_EXISTS, SESSION_EXIST_TEXT, 5);
                     break;
                 case "does_not_exists":
+                    resetSessionState();
                     showErrorDialog(JOIN_ERROR, DOES_NOT_EXIST_TEXT, 5);
                     break;
                 case "incorrect_password":
+                    resetSessionState();
                     showErrorDialog(JOIN_ERROR, INCORRECT_PASSWORD_TEXT, 5);
                     break;
                 case "players_limit":
+                    resetSessionState();
                     showErrorDialog(JOIN_ERROR, MAX_PLAYERS_TEXT, 5);
                     break;
                 default:
+                    resetSessionState();
                     showErrorDialog(SOME_ERROR, SOME_ERROR_TEXT, 5);
                     break;
             }
         }
     }
 
+    private void resetButtons() {
+        createRoomBtn.setDisabled(false); // Включить кнопку
+        joinRoomBtn.setDisabled(false);   // Включить кнопку
+    }
+
     private void showErrorDialog(String title, String message, float autoCloseAfterSeconds) {
-        Dialog errorDialog = new Dialog(title, skin) {
+        errorDialog = new Dialog(title, skin) {
             @Override
             protected void result(Object object) {
                 hide();
@@ -348,7 +358,16 @@ public class HomeSc implements Screen {
         errorDialog.getTitleTable().padTop(40).padLeft(25).padBottom(30);
 
         errorDialog.getContentTable().add(new Label(message, skin)).pad(40);
-        errorDialog.button("OK", true);
+        TextButton okButton = new TextButton("OK", skin);
+        errorDialog.button(okButton, true);
+
+        okButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                errorDialog.hide();
+            }
+        });
+
         errorDialog.show(stage);
 
         if (autoCloseAfterSeconds > 0) {
@@ -357,6 +376,11 @@ public class HomeSc implements Screen {
                     Actions.run(errorDialog::hide)
             ));
         }
+
+    }
+
+    private void resetSessionState() {
+        main.gameSession.setSessionMsg(null);
     }
 
 
@@ -384,7 +408,6 @@ public class HomeSc implements Screen {
         wardrobeTexture.dispose();
         tableTexture.dispose();
         lampTexture.dispose();
-
     }
 
     @Override
