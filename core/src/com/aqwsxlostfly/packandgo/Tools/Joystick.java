@@ -1,6 +1,7 @@
 package com.aqwsxlostfly.packandgo.Tools;
 
 import com.aqwsxlostfly.packandgo.Main;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -34,6 +35,7 @@ public class Joystick {
     }
 
     public void update(float x, float y, boolean isDownTouch, int pointer){
+        Gdx.app.log("Joystick", "Update called with x: " + x + ", y: " + y + ", isDownTouch: " + isDownTouch + ", pointer: " + pointer);
         Point2D touch = new Point2D(x, y);
         if (CircleBounds.isContains(touch) && isDownTouch && this.pointer == -1) this.pointer = pointer;
         if (CircleBounds.overLaps(StickBounds) && isDownTouch && pointer == this.pointer) atControl(new Point2D(x, y));

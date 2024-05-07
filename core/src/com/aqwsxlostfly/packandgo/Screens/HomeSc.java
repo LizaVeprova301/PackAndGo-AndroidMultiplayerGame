@@ -1,6 +1,20 @@
 package com.aqwsxlostfly.packandgo.Screens;
 
 
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.CONNECTING;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.CONNECTING_TEXT;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.CONNECTION_ERROR;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.CREATE_ROOM;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.DOES_NOT_EXIST_TEXT;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.FAILED_TO_CONNECT;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.INCORRECT_PASSWORD_TEXT;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.JOIN_ERROR;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.JOIN_ROOM;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.MAX_PLAYERS_TEXT;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.SESSION_EXISTS;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.SESSION_EXIST_TEXT;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.SOME_ERROR;
+import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.SOME_ERROR_TEXT;
 import static com.aqwsxlostfly.packandgo.render.Renderer.setGameScreen;
 
 import com.aqwsxlostfly.packandgo.Heroes.Player;
@@ -264,29 +278,13 @@ public class HomeSc implements Screen {
 
     }
 
-
-    private static final String CONNECTING = "CONNECTING";
-    private static final String CONNECTING_TEXT = "CONNECTING...";
-    private static final String CONNECTION_ERROR = "Connection Error";
-    private static final String FAILED_TO_CONNECT = "Failed to connect to the server. Check your internet.";
-    private static final String CREATE_ROOM = "CREATE ROOM";
-    private static final String JOIN_ROOM = "JOIN ROOM";
-    private static final String SESSION_EXISTS = "Creation Error";
-    private static final String SESSION_EXIST_TEXT = "Session already exist.";
-    private static final String DOES_NOT_EXIST_TEXT = "Session does not exist.";
-    private static final String INCORRECT_PASSWORD_TEXT = "Incorrect session password.";
-    private static final String JOIN_ERROR = "Joining Error";
-    private static final String MAX_PLAYERS_TEXT = "Room is full. Players limit exceeded.";
-
-    private static final String SOME_ERROR = "Error occured";
-    private static final String SOME_ERROR_TEXT = "Some error occured. Restart game.";
-
     private void connectToServer(String password, String roomId, boolean isCreating) {
         String action = isCreating ? "createRoom" : "joinRoom";
         SessionState sessionState = new SessionStateToSend(action, roomId, password);
         try {
             Main.messageSender.sendMessage(sessionState);
             startConnectionTimer(isCreating, roomId, password);
+
         } catch (Exception e) {
             showErrorDialog(CONNECTION_ERROR, FAILED_TO_CONNECT, 5);
             Gdx.app.log(isCreating ? "ERROR CREATE" : "ERROR JOIN", action + "State " + main.gameSession.getSessionMsg());
@@ -317,7 +315,7 @@ public class HomeSc implements Screen {
                 case "connected_ok":
                     Gdx.app.log(isCreating ? CREATE_ROOM : JOIN_ROOM, "Creating a room with ID: " + roomId + " and password: " + password +
                             " response " + main.gameSession.getSessionMsg());
-                    setGameScreen(new PlayScreen());
+                    setGameScreen();
                     break;
                 case "session_exists":
                     showErrorDialog(SESSION_EXISTS, SESSION_EXIST_TEXT, 5);

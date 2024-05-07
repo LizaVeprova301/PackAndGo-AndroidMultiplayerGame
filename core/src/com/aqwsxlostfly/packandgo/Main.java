@@ -29,12 +29,7 @@ public class Main extends Game {
 
     public static int screenWidth;
     public static int screenHeight;
-    public static int record;
-
     public boolean socketState;
-
-//	public WaitingSc waitingSc;
-
 
     @Override
     public void create() {

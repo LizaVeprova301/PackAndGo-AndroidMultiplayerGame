@@ -34,7 +34,6 @@ import java.util.Objects;
 
 public class TileMapHelper {
     public TiledMap tiledMap;
-    public static TiledMapTileLayer collisionLayer;
     public static int worldHeight;
     public static int worldWigth;
     private Player player;
@@ -78,8 +77,6 @@ public class TileMapHelper {
         worldWigth = properties.get("width", Integer.class) * 16;
         parseMapObjects(tiledMap.getLayers().get("hero").getObjects());
 
-
-        collisionLayer = (TiledMapTileLayer) tiledMap.getLayers().get(0);
 
 
         for(MapLayer mapLayer : tiledMap.getLayers()){

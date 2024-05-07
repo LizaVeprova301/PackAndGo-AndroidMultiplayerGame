@@ -48,7 +48,6 @@ public class MessageProcessor {
                     main.setMeId(meId);
                     break;
                 case "sessionRoom":
-
                     String sessionId = object.getString("id");
                     String sessionPassword = object.getString("password");
                     String sessionMsg = object.getString("msg");

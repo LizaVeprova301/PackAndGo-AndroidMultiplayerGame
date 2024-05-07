@@ -43,13 +43,14 @@ public class GameSessionManager {
     }
 
     public String getSessionIdByUserId(String userSessionId) {
+
         return userToSession.getOrDefault(userSessionId, null);
     }
 
     public void updateGameSession(String userId, JsonNode state) {
         String sessionId = getSessionIdByUserId(userId);
 
-        if (activeGameSessions.containsKey(sessionId)) {
+        if (sessionId != null && activeGameSessions.containsKey(sessionId)) {
             activeGameSessions.get(sessionId).updateGameState(state);
         } else {
             // TODO

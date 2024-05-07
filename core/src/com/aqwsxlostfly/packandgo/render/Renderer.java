@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class Renderer {
 
-    public static final SpriteBatch batch = new SpriteBatch();
+    private final SpriteBatch batch = new SpriteBatch();
 
     private final OrthographicCamera camera;
 
@@ -34,6 +34,8 @@ public class Renderer {
         parameter.color = new Color(Color.RED);
         font = generator.generateFont(parameter);
         generator.dispose();
+
+        Renderer.gameScreen = new PlayScreen();
 
 
     }
@@ -76,10 +78,9 @@ public class Renderer {
 //        homeScreen.screenToChange(newScreen -> homeScreen = (HomeSc) screen);
     }
 
-    public static void setGameScreen(PlayScreen screen) {
-        gameScreen = screen;
+    public static void setGameScreen() {
         currentScreen = gameScreen;
-//        gameScreen.screenToChange(newScreen -> gameScreen = (PlayScreen) screen);
+//        gameScreen.screenToChange(newScreen -> gameScreen = (PlayScreen) gameScreen);
     }
 
 }
