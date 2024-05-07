@@ -1,9 +1,9 @@
 package com.aqwsxlostfly.packandgo.Heroes;
 
-import static com.aqwsxlostfly.packandgo.Tools.TileMapHelper.worldHeight;
-import static com.aqwsxlostfly.packandgo.Tools.TileMapHelper.worldWigth;
+import static com.aqwsxlostfly.packandgo.Tools.maptools.TileMapHelper.worldHeight;
+import static com.aqwsxlostfly.packandgo.Tools.maptools.TileMapHelper.worldWigth;
 
-import com.aqwsxlostfly.packandgo.Tools.Point2D;
+import com.aqwsxlostfly.packandgo.Tools.figures.Point2D;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.objects.TextureMapObject;
 import com.badlogic.gdx.math.Vector2;
@@ -46,7 +46,6 @@ public class Player extends Heroes {
     }
 
     public void setTransform(float x, float y, float angle){
-
         body.setTransform(x, y, angle);
     }
 
@@ -68,5 +67,4 @@ public class Player extends Heroes {
                 textureMapObject.getScaleX(),textureMapObject.getScaleY(), 0);
     }
 }
-
 

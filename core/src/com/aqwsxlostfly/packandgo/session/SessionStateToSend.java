@@ -1,6 +1,8 @@
-package com.aqwsxlostfly.packandgo;
+package com.aqwsxlostfly.packandgo.session;
 
-public class SessionStateToSend implements SessionState{
+import com.aqwsxlostfly.packandgo.session.SessionState;
+
+public class SessionStateToSend implements SessionState {
 
     private String type;
     private String Id;

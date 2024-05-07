@@ -15,14 +15,14 @@ import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.SESSION_EXIS
 import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.SESSION_EXIST_TEXT;
 import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.SOME_ERROR;
 import static com.aqwsxlostfly.packandgo.constants.ScreensConstants.SOME_ERROR_TEXT;
+import static com.aqwsxlostfly.packandgo.render.Renderer.changeToPlayScreen;
 import static com.aqwsxlostfly.packandgo.render.Renderer.setGameScreen;
 
 import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.aqwsxlostfly.packandgo.Main;
-import com.aqwsxlostfly.packandgo.SessionState;
-import com.aqwsxlostfly.packandgo.SessionStateToSend;
-import com.aqwsxlostfly.packandgo.Tools.FlyingObject;
-import com.aqwsxlostfly.packandgo.Tools.ScreenConsumer;
+import com.aqwsxlostfly.packandgo.Tools.hud.FlyingObject;
+import com.aqwsxlostfly.packandgo.session.SessionState;
+import com.aqwsxlostfly.packandgo.session.SessionStateToSend;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
@@ -282,9 +282,9 @@ public class HomeSc implements Screen {
         String action = isCreating ? "createRoom" : "joinRoom";
         SessionState sessionState = new SessionStateToSend(action, roomId, password);
         try {
+            setGameScreen(new PlayScreen());
             Main.messageSender.sendMessage(sessionState);
             startConnectionTimer(isCreating, roomId, password);
-
         } catch (Exception e) {
             showErrorDialog(CONNECTION_ERROR, FAILED_TO_CONNECT, 5);
             Gdx.app.log(isCreating ? "ERROR CREATE" : "ERROR JOIN", action + "State " + main.gameSession.getSessionMsg());
@@ -315,12 +315,12 @@ public class HomeSc implements Screen {
                 case "connected_ok":
                     Gdx.app.log(isCreating ? CREATE_ROOM : JOIN_ROOM, "Creating a room with ID: " + roomId + " and password: " + password +
                             " response " + main.gameSession.getSessionMsg());
-                    setGameScreen();
+                    changeToPlayScreen();
                     break;
                 case "session_exists":
                     showErrorDialog(SESSION_EXISTS, SESSION_EXIST_TEXT, 5);
                     break;
-                case "does_not_exist":
+                case "does_not_exists":
                     showErrorDialog(JOIN_ERROR, DOES_NOT_EXIST_TEXT, 5);
                     break;
                 case "incorrect_password":

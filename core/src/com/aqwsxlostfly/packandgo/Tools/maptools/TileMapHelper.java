@@ -1,8 +1,8 @@
-package com.aqwsxlostfly.packandgo.Tools;
+package com.aqwsxlostfly.packandgo.Tools.maptools;
 
 
-import static com.aqwsxlostfly.packandgo.Tools.BodyHelperService.CATEGORY_PLAYER;
-import static com.aqwsxlostfly.packandgo.Tools.BodyHelperService.CATEGORY_WALL;
+import static com.aqwsxlostfly.packandgo.Tools.maptools.BodyHelperService.CATEGORY_PLAYER;
+import static com.aqwsxlostfly.packandgo.Tools.maptools.BodyHelperService.CATEGORY_WALL;
 
 import com.aqwsxlostfly.packandgo.Heroes.Player;
 import com.badlogic.gdx.Gdx;
@@ -28,7 +28,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.ObjectMap;
 
 import java.util.Objects;
 
@@ -36,9 +35,7 @@ public class TileMapHelper {
     public TiledMap tiledMap;
     public static int worldHeight;
     public static int worldWigth;
-    private Player player;
-
-    private TextureMapObject textureMapObject;
+    private TextureMapObject textureMapObjectPlayer;
 
     public static World world;
 
@@ -57,7 +54,7 @@ public class TileMapHelper {
 
             @Override
             public void endContact(Contact contact) {
-                // Обработка окончания контакта между двумя фикстурами.
+
             }
 
             @Override
@@ -73,57 +70,40 @@ public class TileMapHelper {
     public OrthogonalTiledMapRenderer setupMap() {
         this.tiledMap = new TmxMapLoader().load("Map.tmx");
         MapProperties properties = tiledMap.getProperties();
+
         worldHeight = properties.get("height", Integer.class) * 16;
         worldWigth = properties.get("width", Integer.class) * 16;
-        parseMapObjects(tiledMap.getLayers().get("hero").getObjects());
 
-
-
-        for(MapLayer mapLayer : tiledMap.getLayers()){
-//           Gdx.app.log("CHECK LAYER", "id " + mapLayer.getName());
-           if (Objects.equals(mapLayer.getName(), "ground")){
-
-               MapObjects wallsObjs = new MapObjects();
-
-               for(MapObject mapObject   : mapLayer.getObjects()){
-
-                   if (mapObject.getName()!=null && Objects.equals(mapObject.getName(), "wall")) {
-                        wallsObjs.add(mapObject);
-                   }
-               }
-
-               createWalls(wallsObjs);
-               createMapBounds(worldWigth, worldHeight);
-
-           }
-        }
-
-
-
+        parsePlayerTexture(tiledMap.getLayers().get("hero").getObjects());
+        parseWalls();
 
         return new OrthogonalTiledMapRenderer(tiledMap);
     }
 
-    private void parseMapObjects(MapObjects mapObjects) {
+    private void parsePlayerTexture(MapObjects mapObjects) {
         for (MapObject mapObject : mapObjects) {
 
             TextureMapObject textureMapObject = ((TextureMapObject) mapObject);
-            this.textureMapObject = textureMapObject;
             String textureMapObjectName = textureMapObject.getName();
 
             if (textureMapObjectName != null && textureMapObjectName.equals("hero")) {
-
-
-                Body body = BodyHelperService.createBody(textureMapObject,
-                        world, false);
-
-                body.setTransform(textureMapObject.getX(), textureMapObject.getY(), 0);
-
-                player = new Player(body, textureMapObject);
-
-
+                this.textureMapObjectPlayer = textureMapObject;
             }
+        }
+    }
 
+    private void parseWalls(){
+        for(MapLayer mapLayer : tiledMap.getLayers()){
+            if (Objects.equals(mapLayer.getName(), "walls")){
+                MapObjects wallsObjs = new MapObjects();
+                for(MapObject mapObject   : mapLayer.getObjects()){
+                    if (mapObject.getName()!=null && Objects.equals(mapObject.getName(), "wall")) {
+                        wallsObjs.add(mapObject);
+                    }
+                }
+                createWalls(wallsObjs);
+                createMapBounds(worldWigth, worldHeight);
+            }
         }
     }
 
@@ -194,29 +174,19 @@ public class TileMapHelper {
         shape.dispose();
     }
 
+
     public Player getPlayer() {
 
-        Gdx.app.log("ADD NEW PLAYER", "GET NEW PLAYER IN TILE MAP MEE");
-
-        return player;
-    }
-
-    public Player getNewPlayer() {
-
-        Gdx.app.log("ADD NEW PLAYER", "GET NEW PLAYER IN TILE NEWWWWWWWWWWWW");
-
-        TextureMapObject textureMapObjectNew = new TextureMapObject(textureMapObject.getTextureRegion());
+        TextureMapObject textureMapObjectNew = new TextureMapObject(textureMapObjectPlayer.getTextureRegion());
 
         Body body = BodyHelperService.createBody(textureMapObjectNew,
                 world, false);
 
-        body.setTransform(textureMapObjectNew.getX(), textureMapObjectNew.getY(), 0);
+        body.setTransform(textureMapObjectPlayer.getX(), textureMapObjectPlayer.getY(), 0);
 
-        player = new Player(body, textureMapObjectNew);
+        return new Player(body, textureMapObjectNew);
 
-        return player;
     }
-
 
 
 }

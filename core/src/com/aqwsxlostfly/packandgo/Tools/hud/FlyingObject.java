@@ -1,4 +1,4 @@
-package com.aqwsxlostfly.packandgo.Tools;
+package com.aqwsxlostfly.packandgo.Tools.hud;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;

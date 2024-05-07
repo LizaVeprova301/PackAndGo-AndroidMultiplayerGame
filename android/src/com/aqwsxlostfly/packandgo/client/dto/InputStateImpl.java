@@ -1,7 +1,7 @@
 package com.aqwsxlostfly.packandgo.client.dto;
 
 
-import com.aqwsxlostfly.packandgo.InputState;
+import com.aqwsxlostfly.packandgo.session.InputState;
 
 public class InputStateImpl implements InputState {
 

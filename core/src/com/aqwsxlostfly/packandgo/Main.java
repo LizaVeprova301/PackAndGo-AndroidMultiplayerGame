@@ -4,6 +4,9 @@ package com.aqwsxlostfly.packandgo;
 import com.aqwsxlostfly.packandgo.Screens.HomeSc;
 import com.aqwsxlostfly.packandgo.Screens.PlayScreen;
 import com.aqwsxlostfly.packandgo.render.Renderer;
+import com.aqwsxlostfly.packandgo.session.GameSession;
+import com.aqwsxlostfly.packandgo.session.InputState;
+import com.aqwsxlostfly.packandgo.session.MessageSender;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -26,10 +29,11 @@ public class Main extends Game {
     }
 
 
-
     public static int screenWidth;
     public static int screenHeight;
+
     public boolean socketState;
+
 
     @Override
     public void create() {
@@ -45,7 +49,6 @@ public class Main extends Game {
     public void render() {
         renderer.render();
     }
-
 
 
     public void evict(String idToEvict) {
@@ -87,7 +90,6 @@ public class Main extends Game {
     public void setSocketState(boolean socketState) {
         this.socketState = socketState;
     }
-
 
 
 }

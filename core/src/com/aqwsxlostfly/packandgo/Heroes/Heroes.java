@@ -1,6 +1,6 @@
 package com.aqwsxlostfly.packandgo.Heroes;
 
-import com.aqwsxlostfly.packandgo.Tools.Point2D;
+import com.aqwsxlostfly.packandgo.Tools.figures.Point2D;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.TextureMapObject;

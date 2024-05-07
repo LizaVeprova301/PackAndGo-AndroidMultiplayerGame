@@ -13,7 +13,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class Renderer {
 
-    private final SpriteBatch batch = new SpriteBatch();
+    public static final SpriteBatch batch = new SpriteBatch();
 
     private final OrthographicCamera camera;
 
@@ -23,33 +23,8 @@ public class Renderer {
 
     private static Screen currentScreen;
 
-    private BitmapFont font;
-
     public Renderer() {
-
         camera = new OrthographicCamera(150, 100);
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 13;
-        parameter.color = new Color(Color.RED);
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
-        Renderer.gameScreen = new PlayScreen();
-
-
-    }
-
-    public Screen getCurrentScreen() {
-        return homeScreen;
-    }
-
-    public Screen getGameScreen() {
-        return gameScreen;
-    }
-
-    public void setCurrentScreen(Screen currentScreen) {
-        currentScreen = currentScreen;
     }
 
     public void render() {
@@ -60,7 +35,7 @@ public class Renderer {
             Gdx.gl.glClearColor(0, 0, 0, 1);
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-            batch.setProjectionMatrix(camera.combined); // Устанавливаем матрицу проекции для рендеринга с позиции камеры игры
+            batch.setProjectionMatrix(camera.combined);
             batch.begin();
 
             gameScreen.render(batch, camera);
@@ -68,19 +43,35 @@ public class Renderer {
             batch.end();
         }
 
+    }
 
+    public Screen getCurrentScreen() {
+        return currentScreen;
+    }
 
+    public Screen getGameScreen() {
+        return gameScreen;
+    }
+
+    public Screen getHomeScreen() {
+        return homeScreen;
+    }
+
+    public static void setCurrentScreen(Screen screen) {
+        currentScreen = screen;
     }
 
     public void setHomeScreen(HomeSc screen) {
         homeScreen = screen;
-        currentScreen = homeScreen;
-//        homeScreen.screenToChange(newScreen -> homeScreen = (HomeSc) screen);
+        setCurrentScreen(homeScreen);
     }
 
-    public static void setGameScreen() {
+    public static void setGameScreen(PlayScreen screen) {
+        gameScreen = screen;
+    }
+
+    public static void changeToPlayScreen(){
         currentScreen = gameScreen;
-//        gameScreen.screenToChange(newScreen -> gameScreen = (PlayScreen) gameScreen);
     }
 
 }

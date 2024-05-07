@@ -5,16 +5,18 @@ import static com.aqwsxlostfly.packandgo.Main.meId;
 import static com.aqwsxlostfly.packandgo.Main.messageSender;
 import static com.aqwsxlostfly.packandgo.Main.screenHeight;
 import static com.aqwsxlostfly.packandgo.Main.screenWidth;
-import static com.aqwsxlostfly.packandgo.Tools.TileMapHelper.world;
+import static com.aqwsxlostfly.packandgo.Tools.maptools.TileMapHelper.world;
 
 import com.aqwsxlostfly.packandgo.Heroes.Player;
-import com.aqwsxlostfly.packandgo.InputState;
 import com.aqwsxlostfly.packandgo.Main;
-import com.aqwsxlostfly.packandgo.Tools.Joystick;
-import com.aqwsxlostfly.packandgo.Tools.Point2D;
-import com.aqwsxlostfly.packandgo.Tools.TileMapHelper;
+import com.aqwsxlostfly.packandgo.Tools.figures.Point2D;
+import com.aqwsxlostfly.packandgo.Tools.hud.GameHud;
+import com.aqwsxlostfly.packandgo.Tools.hud.Joystick;
+import com.aqwsxlostfly.packandgo.Tools.maptools.TileMapHelper;
+import com.aqwsxlostfly.packandgo.session.InputState;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -31,9 +33,10 @@ public class PlayScreen implements Screen {
     Joystick joy;
     private final TileMapHelper tileMapHelper;
 
-    private static final float frameRateRender = 1/60f;
+    public GameHud gameHud;
+    private static final float frameRateRender = 1 / 60f;
 
-    private static final float frameRateTimer = 1/50f;
+    private static final float frameRateTimer = 1 / 50f;
 
     private final int mapPixelWidth;
     private final int mapPixelHeight;
@@ -52,12 +55,19 @@ public class PlayScreen implements Screen {
         hudCamera.position.set((float) screenWidth / 2, (float) screenHeight / 2, 0);
         hudCamera.update();
 
+        loadHeroes();
+
         this.tileMapHelper = new TileMapHelper();
         orthogonalTiledMapRenderer = tileMapHelper.setupMap();
 
-        updatePlayerArray(meId, 0,0);
+        updatePlayerArray(meId, 0, 0);
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
 
-        Gdx.input.setInputProcessor(new InputProcessor() {
+        gameHud = new GameHud(players.get(meId));
+
+        inputMultiplexer.addProcessor(gameHud.stage); // Первый обработчик, чтобы убедиться, что UI имеет приоритет
+        inputMultiplexer.addProcessor(new InputAdapter() { // Ваш текущий обработчик событий в PlayScreen
+
             @Override
             public boolean keyDown(int keycode) {
                 return false;
@@ -108,6 +118,8 @@ public class PlayScreen implements Screen {
             }
         });
 
+        Gdx.input.setInputProcessor(inputMultiplexer);
+
 
         MapProperties properties = tileMapHelper.tiledMap.getProperties();
         int mapWidth = properties.get("width", Integer.class);
@@ -117,7 +129,8 @@ public class PlayScreen implements Screen {
         mapPixelWidth = mapWidth * tilePixelWidth;
         mapPixelHeight = mapHeight * tilePixelHeight;
 
-        loadHeroes();
+        startSendingState();
+
     }
 
     public void updatePlayerArray(String id, float x_, float y_) {
@@ -131,9 +144,9 @@ public class PlayScreen implements Screen {
 
             if (players.get(id) != null) {
                 players.get(id).serverUpdate(x_, y_);
-            }else{
+            } else {
                 Gdx.app.log("ADD NEW PLAYER", "id " + id + " x " + x_ + " y " + y_);
-                players.put(id, tileMapHelper.getNewPlayer());
+                players.put(id, tileMapHelper.getPlayer());
             }
 
         }
@@ -167,29 +180,31 @@ public class PlayScreen implements Screen {
         batch.setProjectionMatrix(hudCamera.combined);
 
         joy.draw(batch); // Рисуем джойстик с использованием камеры HUD
+        gameHud.update(frameRateRender);
+        gameHud.draw();
 
-        box2DDebugRenderer.render(world,camera.combined.scl(1));
+//        box2DDebugRenderer.render(world, camera.combined.scl(1));
 
     }
 
-    public void updatePlayers(){
+    public void updatePlayers() {
         players.get(meId).setDirection(joy.getDir());
     }
 
 
-
     @Override
     public void dispose() {
-
+        gameHud.dispose();
     }
 
     public void loadHeroes() {
-
         joy = new Joystick(new Texture("circle.png"),
                 new Texture("circle.png"),
-                new Point2D(((screenHeight / 3) / 2 + (screenHeight / 3) / 4),
-                        (screenHeight / 3) / 2 + (screenHeight / 3) / 4), screenHeight / 3);
+                new Point2D(((float) (screenHeight / 3) / 2 + (float) (screenHeight / 3) / 4),
+                        (float) (screenHeight / 3) / 2 + (float) (screenHeight / 3) / 4), (float) screenHeight / 3);
+    }
 
+    private void startSendingState(){
         Timer timer = new Timer();
         timer.scheduleTask(new Timer.Task() {
             @Override
@@ -198,7 +213,6 @@ public class PlayScreen implements Screen {
             }
         }, 0, frameRateTimer);
     }
-
 
 
     private void cameraUpdate(OrthographicCamera camera) {
@@ -222,6 +236,7 @@ public class PlayScreen implements Screen {
     private float clamp(float value, float min, float max) {
         return Math.max(min, Math.min(max, value));
     }
+
     public void handleTimer() {
         if (!players.isEmpty()) {
             Player me = players.get(meId);
@@ -237,8 +252,6 @@ public class PlayScreen implements Screen {
         inputState.setId(meId);
         inputState.setX(player.getX());
         inputState.setY(player.getY());
-//        inputState.setX(player.getBody().getLinearVelocity().x);
-//        inputState.setY(player.getBody().getLinearVelocity().y);
 
         return inputState;
     }

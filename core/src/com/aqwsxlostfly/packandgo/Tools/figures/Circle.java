@@ -1,4 +1,4 @@
-package com.aqwsxlostfly.packandgo.Tools;
+package com.aqwsxlostfly.packandgo.Tools.figures;
 
 public class Circle {
 

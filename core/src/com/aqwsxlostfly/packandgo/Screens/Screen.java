@@ -1,7 +1,6 @@
 package com.aqwsxlostfly.packandgo.Screens;
 
 import com.aqwsxlostfly.packandgo.Heroes.Player;
-import com.aqwsxlostfly.packandgo.Tools.ScreenConsumer;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 

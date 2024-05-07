@@ -1,4 +1,4 @@
-package com.aqwsxlostfly.packandgo.Tools;
+package com.aqwsxlostfly.packandgo.Tools.maptools;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.objects.TextureMapObject;

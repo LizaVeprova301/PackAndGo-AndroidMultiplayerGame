@@ -54,8 +54,8 @@ public class GameSessionManager {
             activeGameSessions.get(sessionId).updateGameState(state);
         } else {
             // TODO
-            Gdx.app.log("UPDATE SESSION", "ERROR UPDATE SESSION - SESSION " + userId
-                    + " DOES NOT EXISTS");
+//            Gdx.app.log("UPDATE SESSION", "ERROR UPDATE SESSION - SESSION " + userId
+//                    + " DOES NOT EXISTS");
         }
     }
 
