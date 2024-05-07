@@ -1,64 +1,70 @@
 package com.aqwsxlostfly.packandgo.Heroes;
 
-import com.aqwsxlostfly.packandgo.Main;
-import com.aqwsxlostfly.packandgo.Tools.Point2D;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import static com.aqwsxlostfly.packandgo.Tools.maptools.TileMapHelper.worldHeight;
+import static com.aqwsxlostfly.packandgo.Tools.maptools.TileMapHelper.worldWigth;
+
+import com.aqwsxlostfly.packandgo.Tools.figures.Point2D;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.objects.TextureMapObject;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 public class Player extends Heroes {
 
-    private int score = 0;
-    private float health;
-    private boolean ghost;
-    private long startTimer=0;
+    private static final float VELOCITY_SCALE = 80.0f;
 
-    public Player(Texture img, Point2D position, float speed, float radius, float health) {
-        super(img, position, speed, radius);
-        this.health = health;
+    public Player(Body body, TextureMapObject textureMapObject) {
+        super(body, textureMapObject);
+    }
+
+    public void setDirection(Point2D direction) {
+        this.direction = direction;
+        updateVelocity();
+    }
+
+    private void updateVelocity() {
+        Vector2 newDir = new Vector2(direction.getX()*VELOCITY_SCALE, direction.getY()*VELOCITY_SCALE);
+        body.setLinearVelocity(newDir);
+    }
+
+
+    public void serverUpdate(float newX, float newY){
+//        body.setLinearVelocity(new Vector2(newX, newY));
+        body.setTransform(new Vector2(newX, newY), 0);
+    }
+
+    public void setAngle(float angle){
+        body.setTransform(getX(), getY(), angle);
+    }
+
+    public float getX(){
+        return body.getPosition().x;
+    }
+
+    public float getY(){
+        return body.getPosition().y;
+    }
+
+    public void setTransform(float x, float y, float angle){
+        body.setTransform(x, y, angle);
+    }
+
+
+    public float getWidth(){
+        return worldWigth;
+    }
+
+    public float getHeight(){
+        return worldHeight;
     }
 
     @Override
     public void draw(SpriteBatch batch) {
-        if (ghost) {
-            this.img = Main.ghost;
-        }else {
-            this.img = Main.capibara;
-        }
-
-        batch.draw(img, position.getX() - radius, position.getY() - radius);
+        batch.draw(textureRegion,
+                body.getPosition().x-textureRegion.getRegionWidth()/ 2.0f, body.getPosition().y-textureRegion.getRegionHeight() / 2.0f,
+                textureRegion.getRegionWidth() / 2.0f, textureRegion.getRegionHeight() / 2.0f,
+                textureRegion.getRegionWidth(), textureRegion.getRegionHeight(),
+                textureMapObject.getScaleX(),textureMapObject.getScaleY(), 0);
     }
-
-
-    @Override
-    public void update() {
-        if (position.getX() + radius > Main.screenWidth) position.setX(Main.screenWidth - radius);
-        if (position.getX() - radius < 0) position.setX(radius);
-        if (position.getY() + radius > Main.screenHeight) position.setY(Main.screenHeight - radius);
-        if (position.getY() - radius < 0) position.setY(radius);
-        if (startTimer==0 && ghost) startTimer = System.currentTimeMillis();
-        int seconds=0;
-        if (startTimer>0) seconds = (int)(System.currentTimeMillis()-startTimer)/1000;
-        if (seconds>3){
-            ghost=false;
-            startTimer=0;
-        }
-
-        position.addCords(direction.getX() * speed, direction.getY() * speed);
-        bounds.centerPos.setPoint(position);
-
-
-    }
-
-    public void hit() {
-        if (!ghost) {
-            ghost = true;
-            health--;
-        }
-    }
-    public boolean isGhost(){ return ghost;}
-    public float getHealth(){return health;}
-    public void setScore(){score++;}
-    public int getScore(){return score;}
 }
+

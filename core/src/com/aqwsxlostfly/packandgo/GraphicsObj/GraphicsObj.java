@@ -12,6 +12,4 @@ public abstract class GraphicsObj {
 
     public abstract void draw(SpriteBatch batch);
 
-    public abstract void update();
-
 }

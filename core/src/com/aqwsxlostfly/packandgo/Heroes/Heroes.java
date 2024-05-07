@@ -1,39 +1,30 @@
 package com.aqwsxlostfly.packandgo.Heroes;
 
-import com.aqwsxlostfly.packandgo.GraphicsObj.GraphicsObj;
-import com.aqwsxlostfly.packandgo.Tools.Circle;
-import com.aqwsxlostfly.packandgo.Tools.Point2D;
-import com.badlogic.gdx.graphics.Texture;
+import com.aqwsxlostfly.packandgo.Tools.figures.Point2D;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.objects.TextureMapObject;
+import com. badlogic.gdx.physics.box2d.Body;
 
-public abstract class Heroes extends GraphicsObj {
-
-    public Point2D position;
-
-    public float speed, radius;
-
+public abstract class Heroes {
     public Point2D direction;
+    protected Body body;
+    public TextureMapObject textureMapObject;
+    public TextureRegion textureRegion;
 
-    public Circle bounds;
-
-
-    public Heroes(Texture img, Point2D position, float speed, float radius) {
-        super(img);
-        this.position =new Point2D(position);
-        this.radius = radius;
-        this.speed = speed;
-        bounds = new Circle(position, radius);
-        direction = new Point2D(0, 0);
-    }
-    public Heroes(Texture img, Point2D position) {
-        super(img);
-        this.position =new Point2D(position);
-
-        direction = new Point2D(0, 0);
+    public Heroes(Body body, TextureMapObject textureMapObject) {
+        this.body = body;
+        this.direction = new Point2D(0, 0);
+        this.textureMapObject = textureMapObject;
+        this.textureRegion = textureMapObject.getTextureRegion();
     }
 
+    public abstract void draw(SpriteBatch batch);
+    public Body getBody() {
+        return body;
+    }
     public void setDirection(Point2D p){
         direction = p;
     }
-
 
 }
